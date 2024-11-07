@@ -1,15 +1,29 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import * as z from 'zod'
-import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { toast } from "@/components/ui/use-toast"
+import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "react-toastify";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -25,7 +39,7 @@ const formSchema = z.object({
     required_error: "Por favor selecciona una moneda.",
   }),
   note: z.string().optional(),
-})
+});
 
 export function NewFinanceRecordFormComponent() {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -37,20 +51,20 @@ export function NewFinanceRecordFormComponent() {
       currency: "",
       note: "",
     },
-  })
+  });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Aquí puedes manejar el envío del formulario, por ejemplo, enviando los datos a una API
-    console.log(values)
-    toast({
-      title: "Registro creado",
-      description: "Tu nuevo registro financiero ha sido creado exitosamente.",
-    })
+    console.log(values);
+    toast.success("Registro creado");
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-4 p-2 max-w-md m-auto"
+      >
         <FormField
           control={form.control}
           name="title"
@@ -58,11 +72,9 @@ export function NewFinanceRecordFormComponent() {
             <FormItem>
               <FormLabel>Título</FormLabel>
               <FormControl>
-                <Input placeholder="Ej: Compra de acciones de Apple" {...field} />
+                <Input placeholder="Ej: Acciones de Apple" {...field} />
               </FormControl>
-              <FormDescription>
-                El título de tu registro financiero.
-              </FormDescription>
+              <FormDescription></FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -74,7 +86,11 @@ export function NewFinanceRecordFormComponent() {
             <FormItem>
               <FormLabel>Número de acciones</FormLabel>
               <FormControl>
-                <Input type="number" {...field} onChange={e => field.onChange(+e.target.value)} />
+                <Input
+                  type="number"
+                  {...field}
+                  onChange={(e) => field.onChange(+e.target.value)}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -87,7 +103,12 @@ export function NewFinanceRecordFormComponent() {
             <FormItem>
               <FormLabel>Precio</FormLabel>
               <FormControl>
-                <Input type="number" step="0.01" {...field} onChange={e => field.onChange(+e.target.value)} />
+                <Input
+                  type="number"
+                  step="0.01"
+                  {...field}
+                  onChange={(e) => field.onChange(+e.target.value)}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -106,10 +127,7 @@ export function NewFinanceRecordFormComponent() {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="USD">USD</SelectItem>
-                  <SelectItem value="EUR">EUR</SelectItem>
-                  <SelectItem value="GBP">GBP</SelectItem>
-                  <SelectItem value="JPY">JPY</SelectItem>
+                  <SelectItem value="COP">COP</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -123,7 +141,10 @@ export function NewFinanceRecordFormComponent() {
             <FormItem>
               <FormLabel>Nota</FormLabel>
               <FormControl>
-                <Textarea placeholder="Añade cualquier nota adicional aquí" {...field} />
+                <Textarea
+                  placeholder="Añade cualquier nota adicional aquí"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -132,5 +153,5 @@ export function NewFinanceRecordFormComponent() {
         <Button type="submit">Crear registro</Button>
       </form>
     </Form>
-  )
+  );
 }

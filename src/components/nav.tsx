@@ -5,7 +5,7 @@ import { BsDot } from "react-icons/bs";
 
 export function Nav() {
   return (
-    <nav className="border-r shadow-sm p-2">
+    <nav className="p-2">
       <ul className="flex items-center justify-start gap-5">
         <NavItem tab="Home" />
         <BsDot className="text-gray-300" />
