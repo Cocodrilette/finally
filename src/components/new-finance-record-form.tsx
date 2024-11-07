@@ -26,7 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "react-toastify";
 
 const formSchema = z.object({
-  title: z.string().min(2, {
+  name: z.string().min(2, {
     message: "El título debe tener al menos 2 caracteres.",
   }),
   shares: z.number().min(0, {
@@ -45,7 +45,7 @@ export function NewFinanceRecordFormComponent() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
+      name: "",
       shares: 0,
       price: 0,
       currency: "",
@@ -70,10 +70,10 @@ export function NewFinanceRecordFormComponent() {
       >
         <FormField
           control={form.control}
-          name="title"
+          name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Título</FormLabel>
+              <FormLabel>Name</FormLabel>
               <FormControl>
                 <Input placeholder="Ej: Acciones de Apple" {...field} />
               </FormControl>
@@ -87,7 +87,7 @@ export function NewFinanceRecordFormComponent() {
           name="shares"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Número de acciones</FormLabel>
+              <FormLabel>Shares</FormLabel>
               <FormControl>
                 <Input
                   type="number"
@@ -106,7 +106,7 @@ export function NewFinanceRecordFormComponent() {
           name="price"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Precio</FormLabel>
+              <FormLabel>Price</FormLabel>
               <FormControl>
                 <Input
                   type="number"
@@ -125,7 +125,7 @@ export function NewFinanceRecordFormComponent() {
           name="currency"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Moneda</FormLabel>
+              <FormLabel>Currency</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
@@ -145,7 +145,7 @@ export function NewFinanceRecordFormComponent() {
           name="note"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nota</FormLabel>
+              <FormLabel>Aditional note</FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="Añade cualquier nota adicional aquí"
@@ -156,7 +156,7 @@ export function NewFinanceRecordFormComponent() {
             </FormItem>
           )}
         />
-        <Button type="submit">Crear registro</Button>
+        <Button type="submit">Add record</Button>
       </form>
     </Form>
   );
