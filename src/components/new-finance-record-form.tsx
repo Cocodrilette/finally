@@ -57,6 +57,9 @@ export function NewFinanceRecordFormComponent() {
     // Aquí puedes manejar el envío del formulario, por ejemplo, enviando los datos a una API
     console.log(values);
     toast.success("Registro creado");
+
+    // Limpia el formulario
+    form.reset();
   }
 
   return (
@@ -88,6 +91,8 @@ export function NewFinanceRecordFormComponent() {
               <FormControl>
                 <Input
                   type="number"
+                  step="0.01"
+                  min="0"
                   {...field}
                   onChange={(e) => field.onChange(+e.target.value)}
                 />
@@ -106,6 +111,7 @@ export function NewFinanceRecordFormComponent() {
                 <Input
                   type="number"
                   step="0.01"
+                  min="0"
                   {...field}
                   onChange={(e) => field.onChange(+e.target.value)}
                 />
