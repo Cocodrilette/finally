@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Tables } from "../../database.types";
 import { RecordCard } from "./asset-card";
 import { formatCurrency } from "@/lib/utils";
+import { PageTitle } from "./ui/page-title";
 
 export function HomeView() {
   const { isLoaded: isUserLoaded, userId } = useAuth();
@@ -35,20 +36,28 @@ export function HomeView() {
   }, [isUserLoaded, userId]);
 
   return (
-    <div className="p-2">
-      <h1 className="text-2xl font-thin mb-5">HOME</h1>
+    <div>
+      <PageTitle>
+        {loading ? "330.144.889,95" : formatCurrency(total)}
+      </PageTitle>
       <div className="flex flex-col max-w-lg m-auto">
-        <p className="text-4xl font-extralight mb-5">
-          {loading ? "00.000.000" : formatCurrency(total)}
-        </p>
-        <div>
+        <div className="p-2">
           {loading ? (
             <ul className="flex flex-wrap gap-2">
-              {Array.from({ length: 5 }).map((_, index) => (
-                <div
+              {Array.from({ length: 1 }).map((_, index) => (
+                <RecordCard
                   key={index}
-                  className="w-48 h-24 bg-gray-100 animate-pulse"
-                ></div>
+                  record={{
+                    asset: "BTC",
+                    currency: "COP",
+                    price: 330_144_889.95,
+                    shares: 1,
+                    id: 0,
+                    user: "Who?",
+                    created_at: new Date().toISOString(),
+                    note: "",
+                  }}
+                />
               ))}
             </ul>
           ) : (

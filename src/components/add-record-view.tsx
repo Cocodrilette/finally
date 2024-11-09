@@ -1,9 +1,10 @@
 import { NewFinanceRecordFormComponent } from "./new-finance-record-form";
+import { PageTitle } from "./ui/page-title";
 
 export function AddRecordView() {
   return (
     <div>
-      <h1 className="text-3xl font-thin p-2">ADD NEW RECORD</h1>
+      <PageTitle>ADD NEW RECORD</PageTitle>
       <NewFinanceRecordFormComponent />
     </div>
   );
