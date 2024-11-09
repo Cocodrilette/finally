@@ -55,7 +55,7 @@ export function NewFinanceRecordFormComponent() {
       asset: "",
       shares: 0,
       price: 0,
-      currency: "",
+      currency: "COP",
       note: "",
     },
   });

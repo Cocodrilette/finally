@@ -123,7 +123,21 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_records: {
+        Args: {
+          user_id: string
+        }
+        Returns: {
+          id: number
+          created_at: string
+          user: string
+          currency: string
+          asset: string
+          price: number
+          shares: number
+          note: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

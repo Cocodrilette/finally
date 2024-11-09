@@ -1,7 +1,8 @@
-import { getUserRecords } from "@/db";
+import { getLastUserRecords } from "@/db";
 import { useAuth } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { Tables } from "../../database.types";
+import { RecordCard } from "./asset-card";
 
 export function HomeView() {
   const { isLoaded: isUserLoaded, userId } = useAuth();
@@ -10,7 +11,7 @@ export function HomeView() {
 
   async function fetchRecords(userId: string) {
     setLoading(true);
-    const { data, error } = await getUserRecords(userId);
+    const { data, error } = await getLastUserRecords(userId);
     setLoading(false);
 
     if (error) {
@@ -38,10 +39,11 @@ export function HomeView() {
           {records ? (
             <ul>
               {records.map((record) => (
-                <li key={record.id}>
-                  {record.asset} {record.currency} {record.price}{" "}
-                  {record.shares}
-                </li>
+                <RecordCard
+                  key={record.id}
+                  record={record}
+                  isLoading={loading}
+                />
               ))}
             </ul>
           ) : (

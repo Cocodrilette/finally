@@ -34,11 +34,10 @@ export const createRecord = async (recordDTO: RecordDTO) => {
   return { data, error };
 };
 
-export const getUserRecords = async (clerk_id: string) => {
-  const { data, error } = await supabase
-    .from("record")
-    .select()
-    .eq("user", clerk_id);
+export const getLastUserRecords = async (clerk_id: string) => {
+  const { data, error } = await supabase.rpc("get_user_records", {
+    user_id: clerk_id,
+  });
 
   return { data, error };
 };
@@ -81,6 +80,21 @@ export const getUser = async (clerk_id: string) => {
     .select()
     .eq("clerk_id", clerk_id)
     .maybeSingle();
+
+  return { data, error };
+};
+
+export const getAssetCountByUser = async (clerk_id: string) => {
+  const { data, error } = await getAssetsByUser(clerk_id);
+  if (error || !data) {
+    return { data: 0, error };
+  }
+
+  return { data: data.length, error };
+};
+
+export const getAssetsByUser = async (clerk_id: string) => {
+  const { data, error } = await supabase.from("asset").select();
 
   return { data, error };
 };
