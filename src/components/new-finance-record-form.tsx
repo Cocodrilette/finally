@@ -27,6 +27,7 @@ import { toast } from "react-toastify";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { createRecord } from "@/db";
 import { useAuth } from "@clerk/nextjs";
+import { useSearchParams } from "next/navigation";
 
 const formSchema = z.object({
   asset: z.string().min(2, {
@@ -45,6 +46,9 @@ const formSchema = z.object({
 });
 
 export function NewFinanceRecordFormComponent() {
+  const searchParams = useSearchParams();
+  const editingAsset = searchParams.get("asset") || "";
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -52,7 +56,7 @@ export function NewFinanceRecordFormComponent() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      asset: "",
+      asset: editingAsset,
       shares: 0,
       price: 0,
       currency: "COP",

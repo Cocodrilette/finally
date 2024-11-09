@@ -36,7 +36,7 @@ export function HomeView() {
   }, [isUserLoaded, userId]);
 
   return (
-    <div className="flex flex-col max-w-lg m-auto">
+    <div className="flex flex-col max-w-xl m-auto">
       <PageTitle>
         {loading ? "330.144.889,95" : formatCurrency(total)}
       </PageTitle>
