@@ -1,4 +1,4 @@
-import { getLastUserRecords } from "@/db";
+import { getLastUserRecords, getRecordsByUser } from "@/db";
 import { useAuth } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { Tables } from "../../database.types";
@@ -6,25 +6,37 @@ import { RecordCard } from "./asset-card";
 import { formatCurrency } from "@/lib/utils";
 import { PageTitle } from "./ui/page-title";
 import { RecordLineChart } from "./record-line-chart";
+import { RecordChartData } from "@/types";
 
 export function HomeView() {
   const { isLoaded: isUserLoaded, userId } = useAuth();
   const [total, setTotal] = useState(0);
   const [records, setRecords] = useState<Array<Tables<"record">>>([]);
+  const [allRecords, setAllRecords] = useState<RecordChartData[]>([]);
   const [loading, setLoading] = useState(false);
 
   async function fetchRecords(userId: string) {
     setLoading(true);
     const { data, error } = await getLastUserRecords(userId);
+    const { data: allRecords, error: allRecordError } = await getRecordsByUser(
+      userId
+    );
     setLoading(false);
 
-    if (error) {
+    if (error || allRecordError) {
       console.error("Error fetching records", error);
     }
 
-    if (data) {
+    if (data && allRecords) {
       setTotal(
         data.reduce((acc, record) => acc + record.price * record.shares, 0)
+      );
+      setAllRecords(
+        allRecords.map((record) => ({
+          asset: record.asset.split(" ")[0],
+          created_at: record.created_at,
+          price: record.shares * record.price,
+        }))
       );
       setRecords(data);
     }
@@ -42,6 +54,7 @@ export function HomeView() {
         {loading ? "330.144.889,95" : formatCurrency(total)}
       </PageTitle>
       <div className="p-2 flex flex-col gap-5">
+        <RecordLineChart data={allRecords} />
         <div>
           {loading ? (
             <ul className="flex flex-wrap gap-2">
