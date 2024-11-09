@@ -36,11 +36,11 @@ export function HomeView() {
   }, [isUserLoaded, userId]);
 
   return (
-    <div>
+    <div className="flex flex-col max-w-lg m-auto">
       <PageTitle>
         {loading ? "330.144.889,95" : formatCurrency(total)}
       </PageTitle>
-      <div className="flex flex-col max-w-lg m-auto">
+      <div>
         <div className="p-2">
           {loading ? (
             <ul className="flex flex-wrap gap-2">
