@@ -1,3 +1,4 @@
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { ClerkProvider } from "@clerk/nextjs";
@@ -38,6 +39,7 @@ export default function RootLayout({
           <ToastContainer theme="dark" />
           <Header />
           {children}
+          <SpeedInsights />
           <Footer />
         </body>
       </html>
