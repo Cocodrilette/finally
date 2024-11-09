@@ -5,6 +5,7 @@ import { Tables } from "../../database.types";
 import { RecordCard } from "./asset-card";
 import { formatCurrency } from "@/lib/utils";
 import { PageTitle } from "./ui/page-title";
+import { RecordLineChart } from "./record-line-chart";
 
 export function HomeView() {
   const { isLoaded: isUserLoaded, userId } = useAuth();
@@ -40,8 +41,8 @@ export function HomeView() {
       <PageTitle>
         {loading ? "330.144.889,95" : formatCurrency(total)}
       </PageTitle>
-      <div>
-        <div className="p-2">
+      <div className="p-2 flex flex-col gap-5">
+        <div>
           {loading ? (
             <ul className="flex flex-wrap gap-2">
               {Array.from({ length: 1 }).map((_, index) => (

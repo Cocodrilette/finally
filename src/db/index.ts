@@ -127,3 +127,12 @@ export const getAsset = async (assetName: string) => {
 
   return { data: null, error };
 };
+
+export const getRecordsByUser = async (clerk_id: string) => {
+  const { data, error } = await supabase
+    .from("record")
+    .select()
+    .eq("user", clerk_id);
+
+  return { data, error };
+};
