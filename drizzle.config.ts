@@ -10,6 +10,6 @@ export default defineConfig({
   schema: "./src/db/schema.ts",
   dialect: "postgresql",
   dbCredentials: {
-    url: process.env.POSTGRES_URL!,
+    url: process.env.NEXT_PUBLIC_POSTGRES_URL!,
   },
 });
