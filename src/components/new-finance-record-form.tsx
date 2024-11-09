@@ -119,7 +119,14 @@ export function NewFinanceRecordFormComponent() {
                   type="number"
                   step="0.01"
                   min="0"
+                  placeholder="0"
                   {...field}
+                  value={field.value === 0 ? "" : field.value}
+                  onFocus={(e) => {
+                    if (e.target.value === "0") {
+                      e.target.value = "";
+                    }
+                  }}
                   onChange={(e) => field.onChange(+e.target.value)}
                 />
               </FormControl>
@@ -138,7 +145,14 @@ export function NewFinanceRecordFormComponent() {
                   type="number"
                   step="0.01"
                   min="0"
+                  placeholder="0"
                   {...field}
+                  value={field.value === 0 ? "" : field.value}
+                  onFocus={(e) => {
+                    if (e.target.value === "0") {
+                      e.target.value = "";
+                    }
+                  }}
                   onChange={(e) => field.onChange(+e.target.value)}
                 />
               </FormControl>
