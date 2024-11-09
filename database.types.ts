@@ -51,6 +51,7 @@ export type Database = {
           created_at: string
           currency: string
           id: number
+          note: string | null
           price: number
           shares: number
           user: string
@@ -60,6 +61,7 @@ export type Database = {
           created_at?: string
           currency: string
           id?: number
+          note?: string | null
           price: number
           shares: number
           user: string
@@ -69,6 +71,7 @@ export type Database = {
           created_at?: string
           currency?: string
           id?: number
+          note?: string | null
           price?: number
           shares?: number
           user?: string

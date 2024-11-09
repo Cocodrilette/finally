@@ -6,15 +6,29 @@ type RecordDTO = {
   price: number;
   shares: number;
   clerk_id: string;
+  note: string | null | undefined;
 };
 
 export const createRecord = async (recordDTO: RecordDTO) => {
+  const user = await getUserOrThrow(recordDTO.clerk_id);
+
+  const asset = await getOrCreateAsset(recordDTO.asset);
+  if (asset.error || !asset.data) {
+    return { data: null, error: asset.error };
+  }
+
+  const currency = await getOrCreateCurrency(recordDTO.currency);
+  if (currency.error || !currency.data) {
+    return { data: null, error: currency.error };
+  }
+
   const { data, error } = await supabase.from("record").insert({
-    asset: recordDTO.asset,
-    currency: recordDTO.currency,
+    asset: asset.data.name,
+    currency: currency.data.symbol,
     price: recordDTO.price,
     shares: recordDTO.shares,
-    user: recordDTO.clerk_id,
+    user: user.clerk_id,
+    note: recordDTO.note,
   });
 
   return { data, error };
@@ -29,14 +43,36 @@ export const getUserRecords = async (clerk_id: string) => {
   return { data, error };
 };
 
+export const getOrCreateCurrency = async (currencySymbol: string) => {
+  const { data, error } = await getCurrency(currencySymbol);
+  if (data && !error) {
+    return { data, error: null };
+  }
+
+  const { data: newData, error: newError } = await supabase
+    .from("currency")
+    .insert([{ symbol: currencySymbol }]);
+
+  return { data: newData, error: newError };
+};
+
 export const getCurrency = async (currencySymbol: string) => {
   const { data, error } = await supabase
     .from("currency")
     .select()
     .eq("symbol", currencySymbol)
-    .single();
+    .maybeSingle();
 
   return { data, error };
+};
+
+export const getUserOrThrow = async (clerk_id: string) => {
+  const { data, error } = await getUser(clerk_id);
+  if (error || !data) {
+    throw new Error("Unauthorized");
+  }
+
+  return data;
 };
 
 export const getUser = async (clerk_id: string) => {
@@ -44,9 +80,24 @@ export const getUser = async (clerk_id: string) => {
     .from("user")
     .select()
     .eq("clerk_id", clerk_id)
-    .single();
+    .maybeSingle();
 
   return { data, error };
+};
+
+export const getOrCreateAsset = async (assetName: string) => {
+  const asset = await getAsset(assetName);
+  if (asset.data && !asset.error) {
+    return { data: asset.data, error: null };
+  }
+
+  const { data: newData, error: newError } = await supabase
+    .from("asset")
+    .insert([{ name: assetName }])
+    .select()
+    .maybeSingle();
+
+  return { data: newData, error: newError };
 };
 
 export const getAsset = async (assetName: string) => {
@@ -54,7 +105,11 @@ export const getAsset = async (assetName: string) => {
     .from("asset")
     .select()
     .eq("name", assetName)
-    .single();
+    .maybeSingle();
 
-  return { data, error };
+  if (data) {
+    return { data, error };
+  }
+
+  return { data: null, error };
 };

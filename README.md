@@ -39,20 +39,4 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 # DB
 
-## Applying changes to the database
-
-Alternatively, you can generate migrations using the drizzle-kit generate command and then apply them using the drizzle-kit migrate command:
-
-Generate migrations:
-
-```bash
-npx drizzle-kit generate
-```
-
-Apply migrations:
-
-```bash
-npx drizzle-kit migrate
-```
-
-Read more about migration process in [documentation](https://orm.drizzle.team/docs/kit-overview).
+- **Generating types**: `npx supabase gen types typescript --project-id $PROJECT_ID > database.types.ts`

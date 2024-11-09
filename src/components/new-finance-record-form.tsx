@@ -24,9 +24,12 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "react-toastify";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { createRecord } from "@/db";
+import { useAuth } from "@clerk/nextjs";
 
 const formSchema = z.object({
-  name: z.string().min(2, {
+  asset: z.string().min(2, {
     message: "El título debe tener al menos 2 caracteres.",
   }),
   shares: z.number().min(0, {
@@ -42,10 +45,14 @@ const formSchema = z.object({
 });
 
 export function NewFinanceRecordFormComponent() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const { isLoaded: isUserLoaded, userId } = useAuth();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
+      asset: "",
       shares: 0,
       price: 0,
       currency: "",
@@ -53,13 +60,27 @@ export function NewFinanceRecordFormComponent() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Aquí puedes manejar el envío del formulario, por ejemplo, enviando los datos a una API
-    console.log(values);
-    toast.success("Registro creado");
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!isUserLoaded || !userId) return;
 
-    // Limpia el formulario
-    form.reset();
+    setLoading(true);
+    const { error } = await createRecord({
+      asset: values.asset,
+      shares: values.shares,
+      currency: values.currency,
+      price: values.price,
+      note: values.note,
+      clerk_id: userId,
+    });
+    setLoading(false);
+
+    if (error) {
+      setError(error.message);
+    } else {
+      setError("");
+      toast.success("Registro creado con éxito");
+      form.reset();
+    }
   }
 
   return (
@@ -70,10 +91,10 @@ export function NewFinanceRecordFormComponent() {
       >
         <FormField
           control={form.control}
-          name="name"
+          name="asset"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>Nombre</FormLabel>
               <FormControl>
                 <Input placeholder="Ej: Acciones de Apple" {...field} />
               </FormControl>
@@ -106,7 +127,7 @@ export function NewFinanceRecordFormComponent() {
           name="price"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Price</FormLabel>
+              <FormLabel>Precio</FormLabel>
               <FormControl>
                 <Input
                   type="number"
@@ -145,7 +166,7 @@ export function NewFinanceRecordFormComponent() {
           name="note"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Aditional note</FormLabel>
+              <FormLabel>Nota</FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="Añade cualquier nota adicional aquí"
@@ -156,7 +177,14 @@ export function NewFinanceRecordFormComponent() {
             </FormItem>
           )}
         />
-        <Button type="submit">Add record</Button>
+        <Button disabled={loading} type="submit">
+          {loading ? (
+            <AiOutlineLoading3Quarters className="animate-spin" />
+          ) : (
+            "Submit"
+          )}
+        </Button>
+        <p>{error && <span className="text-red-500">Error: {error}</span>}</p>
       </form>
     </Form>
   );
