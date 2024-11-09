@@ -3,6 +3,7 @@ import { useAuth } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { Tables } from "../../database.types";
 import { RecordCard } from "./asset-card";
+import { formatCurrency } from "@/lib/utils";
 
 export function HomeView() {
   const { isLoaded: isUserLoaded, userId } = useAuth();
@@ -37,13 +38,8 @@ export function HomeView() {
     <div className="p-2">
       <h1 className="text-2xl font-thin mb-5">HOME</h1>
       <div className="flex flex-col max-w-lg m-auto">
-        <p className="text-4xl font-extralight">
-          {loading
-            ? "00.000.000"
-            : new Intl.NumberFormat("es-CO", {
-                style: "decimal",
-                currency: "COP",
-              }).format(total)}
+        <p className="text-4xl font-extralight mb-5">
+          {loading ? "00.000.000" : formatCurrency(total)}
         </p>
         <div>
           {loading ? (
@@ -60,11 +56,7 @@ export function HomeView() {
               {records ? (
                 <ul className="flex flex-wrap gap-2">
                   {records.map((record) => (
-                    <RecordCard
-                      key={record.id}
-                      record={record}
-                      isLoading={loading}
-                    />
+                    <RecordCard key={record.id} record={record} />
                   ))}
                 </ul>
               ) : (

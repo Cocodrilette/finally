@@ -1,32 +1,16 @@
+import { formatCurrency } from "@/lib/utils";
 import { Tables } from "../../database.types";
 
-const copIntl = new Intl.NumberFormat("es-CO", {
-  style: "currency",
-  currency: "COP",
-});
-
-export function RecordCard({
-  isLoading,
-  record,
-}: {
-  isLoading: boolean;
-  record: Tables<"record">;
-}) {
+export function RecordCard({ record }: { record: Tables<"record"> }) {
   return (
-    <div className="bg-white shadow-md rounded-md p-4">
-      {isLoading ? (
-        <p>Loading...</p>
-      ) : (
-        <>
-          <h2 className="text-xl font-semibold">{record.asset} </h2>
-          <p className="text-lg">
-            {copIntl.format(record.price * record.shares)}{" "}
-            <span className="text-xs font-light text-gray-500">
-              {record.currency}
-            </span>{" "}
-          </p>
-        </>
-      )}
+    <div className="bg-gray-100 shadow-md border px-5 py-2">
+      <p className="text-lg">
+        {formatCurrency(record.price * record.shares)}{" "}
+        <span className="text-xs font-light text-gray-500">
+          {record.currency}
+        </span>{" "}
+      </p>
+      <p className="text-sm text-gray-400">{record.asset} </p>
     </div>
   );
 }
