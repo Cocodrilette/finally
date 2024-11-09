@@ -6,6 +6,7 @@ import { RecordCard } from "./asset-card";
 
 export function HomeView() {
   const { isLoaded: isUserLoaded, userId } = useAuth();
+  const [total, setTotal] = useState(0);
   const [records, setRecords] = useState<Array<Tables<"record">>>([]);
   const [loading, setLoading] = useState(false);
 
@@ -19,6 +20,9 @@ export function HomeView() {
     }
 
     if (data) {
+      setTotal(
+        data.reduce((acc, record) => acc + record.price * record.shares, 0)
+      );
       setRecords(data);
     }
   }
@@ -30,27 +34,46 @@ export function HomeView() {
   }, [isUserLoaded, userId]);
 
   return (
-    <div>
-      <h1 className="text-2xl font-thin p-2 mb-5">HOME</h1>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <>
-          {records ? (
-            <ul>
-              {records.map((record) => (
-                <RecordCard
-                  key={record.id}
-                  record={record}
-                  isLoading={loading}
-                />
+    <div className="p-2">
+      <h1 className="text-2xl font-thin mb-5">HOME</h1>
+      <div className="flex flex-col max-w-lg m-auto">
+        <p className="text-4xl font-extralight">
+          {loading
+            ? "00.000.000"
+            : new Intl.NumberFormat("es-CO", {
+                style: "decimal",
+                currency: "COP",
+              }).format(total)}
+        </p>
+        <div>
+          {loading ? (
+            <ul className="flex flex-wrap gap-2">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="w-48 h-24 bg-gray-100 animate-pulse"
+                ></div>
               ))}
             </ul>
           ) : (
-            <p>No records found</p>
+            <>
+              {records ? (
+                <ul className="flex flex-wrap gap-2">
+                  {records.map((record) => (
+                    <RecordCard
+                      key={record.id}
+                      record={record}
+                      isLoading={loading}
+                    />
+                  ))}
+                </ul>
+              ) : (
+                <p>No records found</p>
+              )}
+            </>
           )}
-        </>
-      )}
+        </div>
+      </div>
     </div>
   );
 }
