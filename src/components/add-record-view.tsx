@@ -3,9 +3,11 @@ import { PageTitle } from "./ui/page-title";
 
 export function AddRecordView() {
   return (
-    <div>
+    <div className="flex flex-col max-w-xl m-auto">
       <PageTitle>ADD NEW RECORD</PageTitle>
-      <NewFinanceRecordFormComponent />
+      <div>
+        <NewFinanceRecordFormComponent />
+      </div>
     </div>
   );
 }

@@ -92,7 +92,7 @@ export function NewFinanceRecordFormComponent() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-4 p-2 max-w-md m-auto"
+        className="space-y-4 p-2 max-w-xl m-auto"
       >
         <FormField
           control={form.control}
