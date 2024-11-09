@@ -68,7 +68,7 @@ export const getCurrency = async (currencySymbol: string) => {
 export const getUserOrThrow = async (clerk_id: string) => {
   const { data, error } = await getUser(clerk_id);
   if (error || !data) {
-    throw new Error("Unauthorized");
+    throw new Error("Unauthorized. Request access to the Fnlly team.");
   }
 
   return data;

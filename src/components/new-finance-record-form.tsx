@@ -64,23 +64,24 @@ export function NewFinanceRecordFormComponent() {
     if (!isUserLoaded || !userId) return;
 
     setLoading(true);
-    const { error } = await createRecord({
-      asset: values.asset,
-      shares: values.shares,
-      currency: values.currency,
-      price: values.price,
-      note: values.note,
-      clerk_id: userId,
-    });
-    setLoading(false);
+    try {
+      await createRecord({
+        asset: values.asset,
+        shares: values.shares,
+        currency: values.currency,
+        price: values.price,
+        note: values.note,
+        clerk_id: userId,
+      });
 
-    if (error) {
-      setError(error.message);
-    } else {
       setError("");
       toast.success("Registro creado con éxito");
       form.reset();
+    } catch (error) {
+      setError((error as Error).message);
     }
+
+    setLoading(false);
   }
 
   return (
