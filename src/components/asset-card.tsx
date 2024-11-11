@@ -4,13 +4,16 @@ import { formatCurrency } from "@/lib/utils";
 import { Tables } from "../../database.types";
 import Link from "next/link";
 import { IoMdAdd } from "react-icons/io";
+import { HiddableValue } from "./ui/hiddable-value";
 
 export function RecordCard({ record }: { record: Tables<"record"> }) {
+  const value = record.price * record.shares;
+
   return (
     <div className="bg-gray-50 shadow-inner border px-5 py-2">
       <div className="text-xl flex items-center justify-between gap-10">
         <p>
-          {formatCurrency(record.price * record.shares)}{" "}
+          <HiddableValue value={formatCurrency(value)} />{" "}
           <span className="text-xs font-light text-gray-500">
             {record.currency}
           </span>{" "}
@@ -21,7 +24,30 @@ export function RecordCard({ record }: { record: Tables<"record"> }) {
           </Link>
         </span>
       </div>
-      <p className="text-sm text-gray-400">{record.asset} </p>
+      <Asset asset={record.asset} value={value} shares={record.shares} />
     </div>
+  );
+}
+
+function Asset({
+  asset,
+  value,
+  shares,
+}: {
+  asset: string;
+  value: number;
+  shares: number;
+}) {
+  return (
+    <p className="text-sm text-gray-400">
+      {asset}{" "}
+      {value === shares ? (
+        ""
+      ) : (
+        <>
+          (<HiddableValue value={shares.toString()} />)
+        </>
+      )}
+    </p>
   );
 }

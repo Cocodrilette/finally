@@ -5,37 +5,35 @@ import { Tables } from "../../database.types";
 import { RecordCard } from "./asset-card";
 import { formatCurrency } from "@/lib/utils";
 import { PageTitle } from "./ui/page-title";
-import { RecordLineChart } from "./record-line-chart";
-import { RecordChartData } from "@/types";
+import { AssetChartData } from "@/types";
+import { HiddableValue } from "./ui/hiddable-value";
+import { ToggleHidenButton } from "./ui/toggle-hiden-button";
+import { AssetChart } from "./asset-chart";
 
 export function HomeView() {
   const { isLoaded: isUserLoaded, userId } = useAuth();
   const [total, setTotal] = useState(0);
   const [records, setRecords] = useState<Array<Tables<"record">>>([]);
-  const [allRecords, setAllRecords] = useState<RecordChartData[]>([]);
+  const [donnutData, setDonnutData] = useState<AssetChartData[]>([]);
   const [loading, setLoading] = useState(false);
 
   async function fetchRecords(userId: string) {
     setLoading(true);
     const { data, error } = await getLastUserRecords(userId);
-    const { data: allRecords, error: allRecordError } = await getRecordsByUser(
-      userId
-    );
     setLoading(false);
 
-    if (error || allRecordError) {
+    if (error) {
       console.error("Error fetching records", error);
     }
 
-    if (data && allRecords) {
+    if (data) {
       setTotal(
         data.reduce((acc, record) => acc + record.price * record.shares, 0)
       );
-      setAllRecords(
-        allRecords.map((record) => ({
+      setDonnutData(
+        data.map((record) => ({
           asset: record.asset.split(" ")[0],
-          created_at: record.created_at,
-          price: record.shares * record.price,
+          shares: record.shares,
         }))
       );
       setRecords(data);
@@ -50,11 +48,21 @@ export function HomeView() {
 
   return (
     <div className="flex flex-col max-w-xl m-auto">
-      <PageTitle>
-        {loading ? "330.144.889,95" : formatCurrency(total)}
-      </PageTitle>
+      {/* 
+        Title
+      */}
+      <div className="flex items-center">
+        <PageTitle>
+          <HiddableValue
+            value={loading ? "330.144.889,95" : formatCurrency(total)}
+          />
+        </PageTitle>
+        <ToggleHidenButton />
+      </div>
+      {/*
+       */}
       <div className="p-2 flex flex-col gap-5">
-        <RecordLineChart data={allRecords} />
+        <AssetChart items={donnutData} />
         <div>
           {loading ? (
             <ul className="flex flex-wrap gap-2">
