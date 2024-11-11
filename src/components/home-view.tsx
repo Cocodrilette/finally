@@ -7,6 +7,8 @@ import { formatCurrency } from "@/lib/utils";
 import { PageTitle } from "./ui/page-title";
 import { RecordLineChart } from "./record-line-chart";
 import { RecordChartData } from "@/types";
+import { HiddableValue } from "./ui/hiddable-value";
+import { ToggleHidenButton } from "./ui/toggle-hiden-button";
 
 export function HomeView() {
   const { isLoaded: isUserLoaded, userId } = useAuth();
@@ -50,9 +52,19 @@ export function HomeView() {
 
   return (
     <div className="flex flex-col max-w-xl m-auto">
-      <PageTitle>
-        {loading ? "330.144.889,95" : formatCurrency(total)}
-      </PageTitle>
+      {/* 
+        Title
+      */}
+      <div className="flex items-center">
+        <PageTitle>
+          <HiddableValue
+            value={loading ? "330.144.889,95" : formatCurrency(total)}
+          />
+        </PageTitle>
+        <ToggleHidenButton />
+      </div>
+      {/*
+       */}
       <div className="p-2 flex flex-col gap-5">
         <RecordLineChart data={allRecords} />
         <div>
