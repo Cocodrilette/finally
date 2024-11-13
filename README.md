@@ -39,4 +39,4 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 # DB
 
-- **Generating types**: `npx supabase gen types typescript --project-id $PROJECT_ID > database.types.ts`
+- **Generating types**: `npx supabase gen types typescript --project-id $SUPABASE_PROJECT_ID > database.types.ts`

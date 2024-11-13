@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "dbtypes": "npx supabase gen types typescript --project-id $SUPABASE_PROJECT_ID > database.types.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.2.1",
