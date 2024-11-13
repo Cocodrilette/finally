@@ -1,14 +1,13 @@
-import { getLastUserRecords, getRecordsByUser } from "@/db";
+import { getLastUserRecords } from "@/db";
 import { useAuth } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { Tables } from "../../database.types";
-import { RecordCard } from "./asset-card";
 import { formatCurrency } from "@/lib/utils";
 import { PageTitle } from "./ui/page-title";
 import { AssetChartData } from "@/types";
 import { HiddableValue } from "./ui/hiddable-value";
 import { ToggleHidenButton } from "./ui/toggle-hiden-button";
-import { AssetChart } from "./asset-chart";
+import { AssetsView } from "./assets-view";
 
 export function HomeView() {
   const { isLoaded: isUserLoaded, userId } = useAuth();
@@ -61,41 +60,13 @@ export function HomeView() {
       </div>
       {/*
        */}
-      <div className="p-2 flex flex-col gap-5">
-        <AssetChart items={donnutData} />
-        <div>
-          {loading ? (
-            <ul className="flex flex-wrap gap-2">
-              {Array.from({ length: 1 }).map((_, index) => (
-                <RecordCard
-                  key={index}
-                  record={{
-                    asset: "BTC",
-                    currency: "COP",
-                    price: 330_144_889.95,
-                    shares: 1,
-                    id: 0,
-                    user: "Who?",
-                    created_at: new Date().toISOString(),
-                    note: "",
-                  }}
-                />
-              ))}
-            </ul>
-          ) : (
-            <>
-              {records ? (
-                <ul className="flex flex-wrap gap-2">
-                  {records.map((record) => (
-                    <RecordCard key={record.id} record={record} />
-                  ))}
-                </ul>
-              ) : (
-                <p>No records found</p>
-              )}
-            </>
-          )}
-        </div>
+      <div className="p-2 flex flex-col gap-10">
+        <AssetsView
+          donnutData={donnutData}
+          loading={loading}
+          records={records}
+        />
+        {/* <ExpensesView loading={loading} /> */}
       </div>
     </div>
   );

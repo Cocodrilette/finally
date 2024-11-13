@@ -9,6 +9,39 @@ type RecordDTO = {
   note: string | null | undefined;
 };
 
+type ExpenseDTO = {
+  expense: string;
+  value: number;
+  currency: string;
+  payment_method?: string;
+  payment_date?: string;
+  payment_day?: number;
+  type: string;
+  clerk_id: string;
+};
+
+export const createExpense = async (expenseDTO: ExpenseDTO) => {
+  const user = await getUserOrThrow(expenseDTO.clerk_id);
+
+  const currency = await getOrCreateCurrency(expenseDTO.currency);
+  if (currency.error || !currency.data) {
+    return { data: null, error: currency.error };
+  }
+
+  const { data, error } = await supabase.from("expense").insert({
+    currency: currency.data.symbol,
+    name: expenseDTO.expense,
+    value: expenseDTO.value,
+    user: user.clerk_id,
+    payment_method: expenseDTO.payment_method ?? "",
+    payment_date: expenseDTO.payment_date ?? null,
+    payment_day: expenseDTO.payment_day,
+    type: expenseDTO.type,
+  });
+
+  return { data, error };
+};
+
 export const createRecord = async (recordDTO: RecordDTO) => {
   const user = await getUserOrThrow(recordDTO.clerk_id);
 

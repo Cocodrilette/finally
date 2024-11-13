@@ -26,7 +26,7 @@ import { toast } from "react-toastify";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { useAuth } from "@clerk/nextjs";
 import { useSearchParams } from "next/navigation";
-import { DatePicker } from "./ui/date-picker";
+import { createExpense } from "@/db";
 
 const formSchema = z.object({
   expense: z.string().min(2, {
@@ -39,7 +39,9 @@ const formSchema = z.object({
     required_error: "Por favor selecciona una moneda.",
   }),
   payment_day: z.number().optional(),
-  payment_date: z.string().optional(),
+  type: z.string({
+    required_error: "Por favor selecciona un tipo.",
+  }),
 });
 
 export function NewExpenseRecordFormComponent() {
@@ -56,6 +58,8 @@ export function NewExpenseRecordFormComponent() {
       expense: expense,
       value: 0,
       currency: "COP",
+      payment_day: 0,
+      type: "fixed",
     },
   });
 
@@ -64,13 +68,15 @@ export function NewExpenseRecordFormComponent() {
 
     setLoading(true);
     try {
-      //   await createRecord({
-      //     asset: values.asset,
-      //     shares: values.shares,
-      //     currency: values.currency,
-      //     price: values.price,
-      //     clerk_id: userId,
-      //   });
+      console.log("values", values);
+      await createExpense({
+        clerk_id: userId,
+        currency: values.currency,
+        expense: values.expense,
+        payment_day: values.payment_day,
+        type: values.type,
+        value: values.value,
+      });
 
       setError("");
       toast.success("Gasto creado con éxito");
@@ -142,6 +148,27 @@ export function NewExpenseRecordFormComponent() {
                 </FormControl>
                 <SelectContent>
                   <SelectItem value="COP">COP</SelectItem>
+                  <SelectItem value="USD">USD</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="type"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Tipo</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Tipo de gasto" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="fixed">Fijo</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
