@@ -9,7 +9,9 @@ export function Nav() {
       <ul className="flex items-center justify-start gap-5">
         <NavItem tab="Home" />
         <BsDot className="text-gray-300" />
-        <NavItem tab="Add" />
+        <NavItem tab="Asset" />
+        <BsDot className="text-gray-300" />
+        <NavItem tab="Expense" />
       </ul>
     </nav>
   );
