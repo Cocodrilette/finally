@@ -45,6 +45,47 @@ export type Database = {
         }
         Relationships: []
       }
+      expense: {
+        Row: {
+          created_at: string
+          currency: string
+          id: number
+          name: string
+          payment_date: string | null
+          payment_method: string
+          type: string
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          currency: string
+          id?: number
+          name: string
+          payment_date?: string | null
+          payment_method: string
+          type?: string
+          value: number
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          id?: number
+          name?: string
+          payment_date?: string | null
+          payment_method?: string
+          type?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expense_currency_fkey"
+            columns: ["currency"]
+            isOneToOne: false
+            referencedRelation: "currency"
+            referencedColumns: ["symbol"]
+          },
+        ]
+      }
       record: {
         Row: {
           asset: string
