@@ -52,8 +52,10 @@ export type Database = {
           id: number
           name: string
           payment_date: string | null
+          payment_day: number | null
           payment_method: string
           type: string
+          user: string
           value: number
         }
         Insert: {
@@ -62,8 +64,10 @@ export type Database = {
           id?: number
           name: string
           payment_date?: string | null
+          payment_day?: number | null
           payment_method: string
           type?: string
+          user: string
           value: number
         }
         Update: {
@@ -72,8 +76,10 @@ export type Database = {
           id?: number
           name?: string
           payment_date?: string | null
+          payment_day?: number | null
           payment_method?: string
           type?: string
+          user?: string
           value?: number
         }
         Relationships: [
@@ -83,6 +89,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "currency"
             referencedColumns: ["symbol"]
+          },
+          {
+            foreignKeyName: "expense_user_fkey"
+            columns: ["user"]
+            isOneToOne: false
+            referencedRelation: "user"
+            referencedColumns: ["clerk_id"]
           },
         ]
       }
