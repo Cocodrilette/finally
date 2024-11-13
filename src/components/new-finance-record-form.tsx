@@ -48,11 +48,11 @@ const formSchema = z.object({
 export function NewFinanceRecordFormComponent() {
   const searchParams = useSearchParams();
   const editingAsset = searchParams.get("asset") || "";
+  const { isLoaded: isUserLoaded, userId } = useAuth();
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const { isLoaded: isUserLoaded, userId } = useAuth();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -101,7 +101,7 @@ export function NewFinanceRecordFormComponent() {
             <FormItem>
               <FormLabel>Nombre</FormLabel>
               <FormControl>
-                <Input placeholder="Ej: Acciones de Apple" {...field} />
+                <Input placeholder="Acciones de Apple" {...field} />
               </FormControl>
               <FormDescription></FormDescription>
               <FormMessage />
