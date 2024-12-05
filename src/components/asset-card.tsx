@@ -19,7 +19,7 @@ export function RecordCard({ record }: { record: Tables<"record"> }) {
           </span>{" "}
         </p>
         <span className="text-gray-400 border shadow-inner">
-          <Link href={`/?tab=add&asset=${record.asset}`}>
+          <Link href={`/?tab=add&asset=${record.asset}&shares=${record.shares}`}>
             <IoMdAdd />
           </Link>
         </span>
