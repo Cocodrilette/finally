@@ -48,6 +48,7 @@ const formSchema = z.object({
 export function NewFinanceRecordFormComponent() {
   const searchParams = useSearchParams();
   const editingAsset = searchParams.get("asset") || "";
+  const editingShares = searchParams.get("shares") || 0;
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -57,7 +58,7 @@ export function NewFinanceRecordFormComponent() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       asset: editingAsset,
-      shares: 0,
+      shares: editingShares,
       price: 0,
       currency: "COP",
       note: "",
