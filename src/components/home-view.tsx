@@ -86,7 +86,7 @@ export function HomeView() {
             <>
               {records ? (
                 <ul className="flex flex-wrap gap-2">
-                  {records.map((record) => (
+                  {records.filter(record => record.shares > 0).map((record) => (
                     <RecordCard key={record.id} record={record} />
                   ))}
                 </ul>
