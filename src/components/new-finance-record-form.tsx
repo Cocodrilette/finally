@@ -58,7 +58,7 @@ export function NewFinanceRecordFormComponent() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       asset: editingAsset,
-      shares: editingShares,
+      shares: Number(editingShares),
       price: 0,
       currency: "COP",
       note: "",
