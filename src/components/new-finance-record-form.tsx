@@ -47,6 +47,7 @@ const formSchema = z.object({
 
 export function NewFinanceRecordFormComponent() {
   const searchParams = useSearchParams();
+  const { userId, isLoaded: isUserLoaded } = useAuth();
   const editingAsset = searchParams.get("asset") || "";
   const editingShares = searchParams.get("shares") || 0;
 
