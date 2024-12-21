@@ -82,6 +82,8 @@ export function NewFinanceRecordFormComponent() {
       setError("");
       toast.success("Registro creado con éxito");
       form.reset();
+
+      setTimeout(() => (window.location.href = "/?tab=home"), 1000);
     } catch (error) {
       setError((error as Error).message);
     }
