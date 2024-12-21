@@ -67,6 +67,34 @@ export const createRecord = async (recordDTO: RecordDTO) => {
   return { data, error };
 };
 
+export const updateRecord = async (recordDTO: RecordDTO, record_id: string) => {
+  const user = await getUserOrThrow(recordDTO.clerk_id);
+
+  const asset = await getOrCreateAsset(recordDTO.asset);
+  if (asset.error || !asset.data) {
+    return { data: null, error: asset.error };
+  }
+
+  const currency = await getOrCreateCurrency(recordDTO.currency);
+  if (currency.error || !currency.data) {
+    return { data: null, error: currency.error };
+  }
+
+  const { data, error } = await supabase
+    .from("record")
+    .update({
+      asset: asset.data.name,
+      currency: currency.data.symbol,
+      price: recordDTO.price,
+      shares: recordDTO.shares,
+      user: user.clerk_id,
+      note: recordDTO.note,
+    })
+    .eq("id", record_id);
+
+  return { data, error };
+};
+
 export const getLastUserRecords = async (clerk_id: string) => {
   const { data, error } = await supabase.rpc("get_user_records", {
     user_id: clerk_id,

@@ -47,7 +47,7 @@ export function HomeView() {
   }, [isUserLoaded, userId]);
 
   return (
-    <div className="flex flex-col max-w-xl m-auto">
+    <div className="flex flex-col max-w-2xl m-auto">
       {/* 
         Title
       */}
@@ -86,9 +86,11 @@ export function HomeView() {
             <>
               {records ? (
                 <ul className="flex flex-wrap gap-2">
-                  {records.filter(record => record.shares > 0).map((record) => (
-                    <RecordCard key={record.id} record={record} />
-                  ))}
+                  {records
+                    .filter((record) => record.shares > 0)
+                    .map((record) => (
+                      <RecordCard key={record.id} record={record} />
+                    ))}
                 </ul>
               ) : (
                 <p>No records found</p>
