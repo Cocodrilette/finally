@@ -4,31 +4,9 @@ import React from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from "recharts";
 import { Card, CardContent } from "@/components/ui/card";
 import { AssetChartData } from "@/types";
+import { generateHexColor } from "@/lib/utils";
 
-const defaultData: AssetChartData[] = [
-  { asset: "Stock A", shares: 300 },
-  { asset: "Stock B", shares: 200 },
-  { asset: "Stock C", shares: 150 },
-  { asset: "Stock D", shares: 100 },
-  { asset: "Stock E", shares: 50 },
-];
-
-const COLORS = [
-  "#1a1a1a", // Very dark gray
-  "#2e2e2e",
-  "#5e5e5e",
-  "#7a7a7a",
-  "#a0a0a0",
-  "#b4b4b4",
-  "#dcdcdc",
-  "#e0e0e0", // Light gray
-];
-
-export function DonutChart({
-  items = defaultData,
-}: {
-  items?: AssetChartData[];
-}) {
+export function DonutChart({ items = [] }: { items?: AssetChartData[] }) {
   return (
     <Card className="h-full">
       <CardContent>
@@ -42,13 +20,13 @@ export function DonutChart({
                 innerRadius="70%"
                 outerRadius="90%"
                 paddingAngle={2}
-                dataKey="shares"
+                dataKey="value"
                 nameKey="asset"
               >
-                {items.map((entry, index) => (
+                {items.map((item, index) => (
                   <Cell
                     key={`cell-${index}`}
-                    fill={COLORS[index % COLORS.length]}
+                    fill={generateHexColor(item.asset)}
                   />
                 ))}
               </Pie>

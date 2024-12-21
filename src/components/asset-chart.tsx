@@ -22,7 +22,9 @@ export function AssetChart({ items }: { items: AssetChartData[] }) {
           <LuDonut />
         </button>
       </div>
-      {isChartVisible && <DonutChart items={items} />}
+      {isChartVisible && (
+        <DonutChart items={items.filter((item) => item.shares > 0)} />
+      )}
     </div>
   );
 }

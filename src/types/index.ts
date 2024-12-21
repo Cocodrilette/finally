@@ -8,4 +8,6 @@ export type RecordChartData = {
 export type AssetChartData = {
   asset: string;
   shares: number;
+  price: number;
+  value: number;
 };

@@ -34,6 +34,8 @@ export function HomeView() {
         data.map((record) => ({
           asset: record.asset.split(" ")[0],
           shares: record.shares,
+          price: record.price,
+          value: record.price * record.shares,
         }))
       );
       setRecords(data);
