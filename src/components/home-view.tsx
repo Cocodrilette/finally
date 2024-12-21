@@ -66,39 +66,41 @@ export function HomeView() {
       <div className="p-2 flex flex-col gap-5">
         <AssetChart items={donnutData} />
         <div>
-          {loading ? (
-            <ul className="flex flex-wrap gap-2">
-              {Array.from({ length: 1 }).map((_, index) => (
-                <RecordCard
-                  key={index}
-                  record={{
-                    asset: "BTC",
-                    currency: "COP",
-                    price: 330_144_889.95,
-                    shares: 1,
-                    id: 0,
-                    user: "Who?",
-                    created_at: new Date().toISOString(),
-                    note: "",
-                  }}
-                />
-              ))}
-            </ul>
-          ) : (
-            <>
-              {records ? (
-                <ul className="flex flex-wrap gap-2">
-                  {records
-                    .filter((record) => record.shares > 0)
-                    .map((record) => (
-                      <RecordCard key={record.id} record={record} />
-                    ))}
-                </ul>
-              ) : (
-                <p>No records found</p>
-              )}
-            </>
-          )}
+          <ul className="flex flex-wrap gap-2">
+            {loading ? (
+              <>
+                {Array.from({ length: 1 }).map((_, index) => (
+                  <RecordCard
+                    key={index}
+                    record={{
+                      asset: "BTC",
+                      currency: "COP",
+                      price: 330_144_889.95,
+                      shares: 1,
+                      id: 0,
+                      user: "Who?",
+                      created_at: new Date().toISOString(),
+                      note: "",
+                    }}
+                  />
+                ))}
+              </>
+            ) : (
+              <>
+                {records ? (
+                  <>
+                    {records
+                      .filter((record) => record.shares > 0)
+                      .map((record) => (
+                        <RecordCard key={record.id} record={record} />
+                      ))}
+                  </>
+                ) : (
+                  <p>No records found</p>
+                )}
+              </>
+            )}
+          </ul>
         </div>
       </div>
     </div>

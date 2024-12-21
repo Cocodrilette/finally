@@ -11,3 +11,8 @@ export type AssetChartData = {
   price: number;
   value: number;
 };
+
+export type AssetHistory = {
+  asset: string;
+  history: Array<{ date: string; price: number }>;
+};
