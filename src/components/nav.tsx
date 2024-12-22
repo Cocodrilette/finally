@@ -10,8 +10,8 @@ export function Nav() {
         <NavItem tab="Home" />
         <BsDot className="text-gray-300" />
         <NavItem tab="Asset" />
-        <BsDot className="text-gray-300" />
-        <NavItem tab="Expense" />
+        {/* <BsDot className="text-gray-300" />
+        <NavItem tab="Expense" /> */}
       </ul>
     </nav>
   );
