@@ -72,3 +72,10 @@ export const getAssetsHistory = async (
   console.log(history);
   return { data: history, error: null };
 };
+
+export const shortDate = (dateString: string) =>
+  new Date(dateString).toLocaleDateString("en-US", {
+    year: "2-digit",
+    month: "short",
+    day: "numeric",
+  });
