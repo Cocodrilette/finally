@@ -2,9 +2,9 @@ import { getLastUserRecords } from "@/db";
 import { useAuth } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { Tables } from "../../database.types";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, getAssetsHistory } from "@/lib/utils";
 import { PageTitle } from "./ui/page-title";
-import { AssetChartData } from "@/types";
+import { AssetChartData, AssetHistory } from "@/types";
 import { HiddableValue } from "./ui/hiddable-value";
 import { ToggleHidenButton } from "./ui/toggle-hiden-button";
 import { AssetChart } from "./asset-chart";
@@ -15,30 +15,44 @@ export function HomeView() {
   const [total, setTotal] = useState(0);
   const [records, setRecords] = useState<Array<Tables<"record">>>([]);
   const [donnutData, setDonnutData] = useState<AssetChartData[]>([]);
+  const [assetHistory, setAssetHistory] = useState<AssetHistory>([]);
   const [loading, setLoading] = useState(false);
 
   async function fetchRecords(userId: string) {
     setLoading(true);
-    const { data, error } = await getLastUserRecords(userId);
+    const { data: lastUserRecords, error: lastUserRecordsError } =
+      await getLastUserRecords(userId);
+    const { data: userRecords, error: userRecordsError } =
+      await getAssetsHistory(userId);
     setLoading(false);
 
-    if (error) {
-      console.error("Error fetching records", error);
+    if (lastUserRecordsError) {
+      console.error("Error fetching records", lastUserRecordsError);
+    }
+    if (userRecordsError) {
+      console.error("Error fetching records", userRecordsError);
     }
 
-    if (data) {
+    if (lastUserRecords) {
       setTotal(
-        data.reduce((acc, record) => acc + record.price * record.shares, 0)
+        lastUserRecords.reduce(
+          (acc, record) => acc + record.price * record.shares,
+          0
+        )
       );
       setDonnutData(
-        data.map((record) => ({
+        lastUserRecords.map((record) => ({
           asset: record.asset.split(" ")[0],
           shares: record.shares,
           price: record.price,
           value: record.price * record.shares,
         }))
       );
-      setRecords(data);
+      setRecords(lastUserRecords);
+    }
+
+    if (userRecords) {
+      setAssetHistory(userRecords);
     }
   }
 
@@ -64,7 +78,7 @@ export function HomeView() {
       {/*
        */}
       <div className="p-2 flex flex-col gap-5">
-        <AssetChart items={donnutData} />
+        <AssetChart donnutData={donnutData} lineData={assetHistory} />
         <div>
           <ul className="flex flex-wrap gap-2">
             {loading ? (

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { AssetChartData } from "@/types";
+import { AssetChartData, AssetHistory } from "@/types";
 import { DonutChart } from "./ui/donut-chart";
 import { LuDonut } from "react-icons/lu";
 import { AiOutlineLineChart } from "react-icons/ai";
@@ -8,14 +8,20 @@ import { LineChart } from "./ui/line-chart";
 
 type ChartType = "donut" | "line" | null;
 
-export function AssetChart({ items }: { items: AssetChartData[] }) {
+export function AssetChart({
+  donnutData,
+  lineData,
+}: {
+  donnutData: AssetChartData[];
+  lineData: AssetHistory;
+}) {
   const [activeChart, setActiveChart] = useState<ChartType>(null);
 
   const toggleChart = (chartType: ChartType) => {
     setActiveChart((current) => (current === chartType ? null : chartType));
   };
 
-  const filteredItems = items.filter((item) => item.shares > 0);
+  const filteredDonnutData = donnutData.filter((item) => item.shares > 0);
 
   return (
     <div className="flex flex-col gap-5">
@@ -32,8 +38,8 @@ export function AssetChart({ items }: { items: AssetChartData[] }) {
         />
       </div>
 
-      {activeChart === "donut" && <DonutChart items={filteredItems} />}
-      {activeChart === "line" && <LineChart items={filteredItems} />}
+      {activeChart === "donut" && <DonutChart items={filteredDonnutData} />}
+      {activeChart === "line" && <LineChart items={lineData} />}
     </div>
   );
 }

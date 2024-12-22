@@ -12,7 +12,15 @@ export type AssetChartData = {
   value: number;
 };
 
-export type AssetHistory = {
-  asset: string;
-  history: Array<{ date: string; price: number }>;
+export type AssetHistoryData = {
+  [assetName: string]: Array<{
+    date: string;
+    price: number;
+  }>;
 };
+
+export type AssetHistory = Array<{
+  asset: string;
+  date: string;
+  price: number;
+}>;
