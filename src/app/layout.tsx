@@ -5,6 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { ToastContainer } from "react-toastify";
+import { Analytics } from "@vercel/analytics/next";
 
 import "./globals.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -39,6 +40,7 @@ export default function RootLayout({
           <ToastContainer theme="dark" />
           <Header />
           {children}
+          <Analytics />
           <SpeedInsights />
           <Footer />
         </body>
