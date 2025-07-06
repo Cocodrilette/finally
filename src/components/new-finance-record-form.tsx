@@ -120,7 +120,7 @@ export function NewFinanceRecordFormComponent() {
               <FormControl>
                 <Input
                   type="number"
-                  step="0.01"
+                  step="0.0000000001"
                   min="0"
                   placeholder="0"
                   {...field}
