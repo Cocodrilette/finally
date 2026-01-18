@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   keywords: ["finanzas", "inversiones", "rastreador", "portafolio", "activos"],
   authors: [{ name: "cocodrilette" }],
   creator: "cocodrilette",
-  metadataBase: new URL("https://finally-flax.vercel.app/"),
+  metadataBase: new URL("https://fnlly.vercel.app/"),
   openGraph: {
     type: "website",
     locale: "es_CO",
