@@ -1,5 +1,4 @@
 import { getLastUserRecords } from "@/db";
-import { useAuth } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { Tables } from "../../database.types";
 import { formatCurrency, getAssetsHistory } from "@/lib/utils";
@@ -9,14 +8,29 @@ import { HiddableValue } from "./ui/hiddable-value";
 import { ToggleHidenButton } from "./ui/toggle-hiden-button";
 import { AssetChart } from "./asset-chart";
 import { RecordCard } from "./asset-card";
+import { createClient } from "@/lib/supabase/client";
 
 export function HomeView() {
-  const { isLoaded: isUserLoaded, userId } = useAuth();
+  const [userId, setUserId] = useState<string | null>(null);
+  const [isUserLoaded, setIsUserLoaded] = useState(false);
   const [total, setTotal] = useState(0);
   const [records, setRecords] = useState<Array<Tables<"record">>>([]);
   const [donnutData, setDonnutData] = useState<AssetChartData[]>([]);
   const [assetHistory, setAssetHistory] = useState<AssetHistory>([]);
   const [loading, setLoading] = useState(false);
+  const supabase = createClient();
+
+  useEffect(() => {
+    const getUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUserId(user?.id ?? null);
+      setIsUserLoaded(true);
+    };
+
+    getUser();
+  }, [supabase]);
 
   async function fetchRecords(userId: string) {
     setLoading(true);

@@ -12,4 +12,6 @@ if (!supabaseAnonKey) {
   throw new Error("Missing env.NEXT_PUBLIC_SUPABASE_ANON_KEY");
 }
 
+// This is a basic client for server-side operations
+// For auth-aware operations, use the SSR client from @/lib/supabase/server or @/lib/supabase/client
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);

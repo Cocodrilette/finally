@@ -67,7 +67,7 @@ export const createRecord = async (recordDTO: RecordDTO) => {
   return { data, error };
 };
 
-export const updateRecord = async (recordDTO: RecordDTO, record_id: string) => {
+export const updateRecord = async (recordDTO: RecordDTO, record_id: number) => {
   const user = await getUserOrThrow(recordDTO.clerk_id);
 
   const asset = await getOrCreateAsset(recordDTO.asset);

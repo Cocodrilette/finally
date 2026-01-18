@@ -10,7 +10,6 @@
     "dbtypes": "npx supabase gen types typescript --project-id $SUPABASE_PROJECT_ID > database.types.ts"
   },
   "dependencies": {
-    "@clerk/nextjs": "^6.2.1",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@hookform/resolvers": "^3.9.1",
@@ -21,6 +20,7 @@
     "@radix-ui/react-popover": "^1.1.2",
     "@radix-ui/react-select": "^2.1.2",
     "@radix-ui/react-slot": "^1.1.0",
+    "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.46.1",
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.1.0",
