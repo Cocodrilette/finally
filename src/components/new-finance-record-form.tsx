@@ -90,7 +90,7 @@ export function NewFinanceRecordFormComponent() {
         currency: values.currency,
         price: values.price,
         note: values.note,
-        clerk_id: userId,
+        user_id: userId,
       });
 
       setError("");

@@ -21,8 +21,31 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Finally",
-  description: "Finally, I made it! A minimalistic finance tracker.",
+  title: "Fnlly",
+  description: "Fnlly es un rastreador de finanzas simple, privado y directo.",
+  keywords: ["finanzas", "inversiones", "rastreador", "portafolio", "activos"],
+  authors: [{ name: "cocodrilette" }],
+  creator: "cocodrilette",
+  metadataBase: new URL("https://finally-flax.vercel.app/"),
+  openGraph: {
+    type: "website",
+    locale: "es_CO",
+    siteName: "Fnlly",
+    title: "Fnlly",
+    description:
+      "Simple, privado y directo. Registra tus inversiones y observa su evolucion.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Fnlly",
+    description:
+      "Simple, privado y directo. Registra tus inversiones y observa su evolucion.",
+    creator: "@cocodrilette",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({

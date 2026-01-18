@@ -1,3 +1,5 @@
+"use client";
+
 import { getLastUserRecords } from "@/db";
 import { useEffect, useState } from "react";
 import { Tables } from "../../database.types";
@@ -9,6 +11,7 @@ import { ToggleHidenButton } from "./ui/toggle-hiden-button";
 import { AssetChart } from "./asset-chart";
 import { RecordCard } from "./asset-card";
 import { createClient } from "@/lib/supabase/client";
+import { Welcome } from "./welcome";
 
 export function HomeView() {
   const [userId, setUserId] = useState<string | null>(null);
@@ -76,11 +79,17 @@ export function HomeView() {
     }
   }, [isUserLoaded, userId]);
 
+  // Show welcome page if no records and not loading
+  const hasRecords = records && records.length > 0;
+  const showWelcome = !loading && isUserLoaded && !hasRecords;
+
+  if (showWelcome) {
+    return <Welcome />;
+  }
+
   return (
     <div className="flex flex-col max-w-2xl m-auto">
-      {/* 
-        Title
-      */}
+      {/* Title */}
       <div className="flex items-center">
         <PageTitle>
           <HiddableValue
@@ -89,44 +98,31 @@ export function HomeView() {
         </PageTitle>
         <ToggleHidenButton />
       </div>
-      {/*
-       */}
+
+      {/* Content */}
       <div className="p-2 flex flex-col gap-5">
         <AssetChart donnutData={donnutData} lineData={assetHistory} />
         <div>
           <ul className="flex flex-wrap gap-2">
             {loading ? (
-              <>
-                {Array.from({ length: 1 }).map((_, index) => (
-                  <RecordCard
-                    key={index}
-                    record={{
-                      asset: "BTC",
-                      currency: "COP",
-                      price: 330_144_889.95,
-                      shares: 1,
-                      id: 0,
-                      user: "Who?",
-                      created_at: new Date().toISOString(),
-                      note: "",
-                    }}
-                  />
-                ))}
-              </>
+              <RecordCard
+                record={{
+                  asset: "BTC",
+                  currency: "COP",
+                  price: 330_144_889.95,
+                  shares: 1,
+                  id: 0,
+                  user_id: null,
+                  created_at: "2024-01-01T00:00:00.000Z",
+                  note: "",
+                }}
+              />
             ) : (
-              <>
-                {records ? (
-                  <>
-                    {records
-                      .filter((record) => record.shares > 0)
-                      .map((record) => (
-                        <RecordCard key={record.id} record={record} />
-                      ))}
-                  </>
-                ) : (
-                  <p>No records found</p>
-                )}
-              </>
+              records
+                .filter((record) => record.shares > 0)
+                .map((record) => (
+                  <RecordCard key={record.id} record={record} />
+                ))
             )}
           </ul>
         </div>

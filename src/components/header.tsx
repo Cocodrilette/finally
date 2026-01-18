@@ -38,16 +38,16 @@ export function Header() {
   };
 
   return (
-    <header className="flex items-center justify-between p-2 border-b shadow-sm">
-      <h1 className="font-[family-name:var(--font-geist-mono)] font-semibold text-xl">
+    <header className="flex items-center justify-between px-4 py-3 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <h1 className="font-[family-name:var(--font-geist-mono)] font-bold text-xl tracking-tight">
         Fnlly
       </h1>
       {!loading && user && (
         <button
           onClick={handleSignOut}
-          className="px-4 py-2 text-sm rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
+          className="px-3 py-1.5 text-sm rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
         >
-          Cerrar sesión
+          Cerrar sesion
         </button>
       )}
     </header>

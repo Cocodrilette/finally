@@ -44,18 +44,34 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
-  // creating a new response object with NextResponse.next() make sure to:
-  // 1. Pass the request in it, like so:
-  //    const myNewResponse = NextResponse.next({ request })
-  // 2. Copy over the cookies, like so:
-  //    myNewResponse.cookies.setAll(supabaseResponse.cookies.getAll())
-  // 3. Change the myNewResponse object to fit your needs, but avoid changing
-  //    the cookies!
-  // 4. Finally:
-  //    return myNewResponse
-  // If this is not done, you may be causing the browser and server to go out
-  // of sync and terminate the user's session prematurely.
+  // Route protection logic
+  const publicRoutes = ["/sign-in", "/sign-up"];
+  const pathname = request.nextUrl.pathname;
+  const isPublicRoute = publicRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
+
+  // If no user and not a public route → redirect to sign-in
+  if (!user && !isPublicRoute) {
+    const redirectUrl = new URL("/sign-in", request.url);
+    const redirectResponse = NextResponse.redirect(redirectUrl);
+    // Copy cookies to maintain session state
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
+    });
+    return redirectResponse;
+  }
+
+  // If user exists and on auth route → redirect to home
+  if (user && isPublicRoute) {
+    const redirectUrl = new URL("/", request.url);
+    const redirectResponse = NextResponse.redirect(redirectUrl);
+    // Copy cookies to maintain session state
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
+    });
+    return redirectResponse;
+  }
 
   return supabaseResponse;
 }

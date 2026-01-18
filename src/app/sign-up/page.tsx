@@ -5,18 +5,31 @@ import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { toast } from "react-toastify";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 export default function SignUpPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const supabase = createClient();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (password !== confirmPassword) {
+      toast.error("Las contraseñas no coinciden");
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.error("La contraseña debe tener al menos 6 caracteres");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -39,12 +52,22 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="flex items-center justify-center pt-5 m-auto min-h-[571px]">
-      <div className="w-full max-w-md p-8 space-y-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold text-center">Registrarse</h1>
+    <div className="flex flex-col items-center justify-center px-4 py-8 min-h-[calc(100vh-120px)]">
+      <div className="w-full max-w-sm space-y-6">
+        {/* Header */}
+        <div className="text-center space-y-2">
+          <h1 className="text-2xl font-bold font-[family-name:var(--font-geist-mono)]">
+            Crear cuenta
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Registrate para comenzar a rastrear tus finanzas
+          </p>
+        </div>
+
+        {/* Form */}
         <form onSubmit={handleSignUp} className="space-y-4">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium mb-2">
+          <div className="space-y-2">
+            <label htmlFor="email" className="block text-sm font-medium">
               Email
             </label>
             <Input
@@ -54,37 +77,60 @@ export default function SignUpPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              className="h-10"
             />
           </div>
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium mb-2"
-            >
-              Contraseña
+          <div className="space-y-2">
+            <label htmlFor="password" className="block text-sm font-medium">
+              Contrasena
             </label>
-            <Input
+            <PasswordInput
               id="password"
-              type="password"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={6}
+              className="h-10"
+            />
+            <p className="text-xs text-muted-foreground">
+              Minimo 6 caracteres
+            </p>
+          </div>
+          <div className="space-y-2">
+            <label
+              htmlFor="confirmPassword"
+              className="block text-sm font-medium"
+            >
+              Confirmar contrasena
+            </label>
+            <PasswordInput
+              id="confirmPassword"
+              placeholder="••••••••"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              minLength={6}
+              className="h-10"
             />
           </div>
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button type="submit" className="w-full h-10" disabled={loading}>
             {loading ? (
               <AiOutlineLoading3Quarters className="animate-spin" />
             ) : (
-              "Registrarse"
+              "Crear cuenta"
             )}
           </Button>
         </form>
-        <p className="text-center text-sm">
-          ¿Ya tienes cuenta?{" "}
-          <a href="/sign-in" className="text-blue-500 hover:underline">
-            Inicia sesión
+
+        {/* Footer */}
+        <p className="text-center text-sm text-muted-foreground">
+          Ya tienes cuenta?{" "}
+          <a
+            href="/sign-in"
+            className="text-foreground font-medium hover:underline"
+          >
+            Inicia sesion
           </a>
         </p>
       </div>

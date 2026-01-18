@@ -1,32 +1,40 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { BsDot } from "react-icons/bs";
+import { useRouter, useSearchParams } from "next/navigation";
+import { BsHouseDoor, BsGraphUpArrow } from "react-icons/bs";
 
 export function Nav() {
   return (
-    <nav className="p-2">
-      <ul className="flex items-center justify-start gap-5">
-        <NavItem tab="Home" />
-        <BsDot className="text-gray-300" />
-        <NavItem tab="Asset" />
-        {/* <BsDot className="text-gray-300" />
-        <NavItem tab="Expense" /> */}
+    <nav className="p-2 max-w-2xl mx-auto">
+      <ul className="flex items-center justify-start gap-1">
+        <NavItem tab="Home" icon={<BsHouseDoor />} />
+        <NavItem tab="Asset" icon={<BsGraphUpArrow />} />
       </ul>
     </nav>
   );
 }
 
-function NavItem({ tab }: { tab: string }) {
+function NavItem({ tab, icon }: { tab: string; icon: React.ReactNode }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const currentTab = searchParams.get("tab") || "home";
+  const isActive = currentTab.toLowerCase() === tab.toLowerCase();
 
   const handleNavigation = (tab: string) => {
     router.push(`/?tab=${tab.toLowerCase()}`);
   };
 
   return (
-    <li className="flex items-center justify-between gap-2 underline">
-      <button className="" onClick={() => handleNavigation(tab)}>
+    <li>
+      <button
+        onClick={() => handleNavigation(tab)}
+        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+          isActive
+            ? "bg-primary text-primary-foreground"
+            : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+        }`}
+      >
+        {icon}
         {tab}
       </button>
     </li>

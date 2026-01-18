@@ -36,9 +36,9 @@ export function generateHexColor(input: string): string {
 }
 
 export const getAssetsHistory = async (
-  clerk_id: string
+  user_id: string
 ): Promise<{ data: AssetHistory | null; error: any | null }> => {
-  const records = await getRecordsByUser(clerk_id);
+  const records = await getRecordsByUser(user_id);
   if (records.error || !records.data) {
     return { data: null, error: records.error };
   }

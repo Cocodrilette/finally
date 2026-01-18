@@ -5,7 +5,7 @@ type RecordDTO = {
   currency: string;
   price: number;
   shares: number;
-  clerk_id: string;
+  user_id: string;
   note: string | null | undefined;
 };
 
@@ -17,12 +17,10 @@ type ExpenseDTO = {
   payment_date?: string;
   payment_day?: number;
   type: string;
-  clerk_id: string;
+  user_id: string;
 };
 
 export const createExpense = async (expenseDTO: ExpenseDTO) => {
-  const user = await getUserOrThrow(expenseDTO.clerk_id);
-
   const currency = await getOrCreateCurrency(expenseDTO.currency);
   if (currency.error || !currency.data) {
     return { data: null, error: currency.error };
@@ -32,7 +30,7 @@ export const createExpense = async (expenseDTO: ExpenseDTO) => {
     currency: currency.data.symbol,
     name: expenseDTO.expense,
     value: expenseDTO.value,
-    user: user.clerk_id,
+    user: expenseDTO.user_id,
     payment_method: expenseDTO.payment_method ?? "",
     payment_date: expenseDTO.payment_date ?? null,
     payment_day: expenseDTO.payment_day,
@@ -43,8 +41,6 @@ export const createExpense = async (expenseDTO: ExpenseDTO) => {
 };
 
 export const createRecord = async (recordDTO: RecordDTO) => {
-  const user = await getUserOrThrow(recordDTO.clerk_id);
-
   const asset = await getOrCreateAsset(recordDTO.asset);
   if (asset.error || !asset.data) {
     return { data: null, error: asset.error };
@@ -60,7 +56,7 @@ export const createRecord = async (recordDTO: RecordDTO) => {
     currency: currency.data.symbol,
     price: recordDTO.price,
     shares: recordDTO.shares,
-    user: user.clerk_id,
+    user_id: recordDTO.user_id,
     note: recordDTO.note,
   });
 
@@ -68,8 +64,6 @@ export const createRecord = async (recordDTO: RecordDTO) => {
 };
 
 export const updateRecord = async (recordDTO: RecordDTO, record_id: number) => {
-  const user = await getUserOrThrow(recordDTO.clerk_id);
-
   const asset = await getOrCreateAsset(recordDTO.asset);
   if (asset.error || !asset.data) {
     return { data: null, error: asset.error };
@@ -87,7 +81,7 @@ export const updateRecord = async (recordDTO: RecordDTO, record_id: number) => {
       currency: currency.data.symbol,
       price: recordDTO.price,
       shares: recordDTO.shares,
-      user: user.clerk_id,
+      user_id: recordDTO.user_id,
       note: recordDTO.note,
     })
     .eq("id", record_id);
@@ -95,9 +89,9 @@ export const updateRecord = async (recordDTO: RecordDTO, record_id: number) => {
   return { data, error };
 };
 
-export const getLastUserRecords = async (clerk_id: string) => {
+export const getLastUserRecords = async (user_id: string) => {
   const { data, error } = await supabase.rpc("get_user_records", {
-    user_id: clerk_id,
+    p_user_id: user_id,
   });
 
   return { data, error };
@@ -126,8 +120,8 @@ export const getCurrency = async (currencySymbol: string) => {
   return { data, error };
 };
 
-export const getUserOrThrow = async (clerk_id: string) => {
-  const { data, error } = await getUser(clerk_id);
+export const getUserOrThrow = async (user_id: string) => {
+  const { data, error } = await getUser(user_id);
   if (error || !data) {
     throw new Error("Unauthorized. Request access to the Fnlly team.");
   }
@@ -135,18 +129,18 @@ export const getUserOrThrow = async (clerk_id: string) => {
   return data;
 };
 
-export const getUser = async (clerk_id: string) => {
+export const getUser = async (user_id: string) => {
   const { data, error } = await supabase
     .from("user")
     .select()
-    .eq("clerk_id", clerk_id)
+    .eq("clerk_id", user_id)
     .maybeSingle();
 
   return { data, error };
 };
 
-export const getAssetCountByUser = async (clerk_id: string) => {
-  const { data, error } = await getAssetsByUser(clerk_id);
+export const getAssetCountByUser = async (user_id: string) => {
+  const { data, error } = await getAssetsByUser(user_id);
   if (error || !data) {
     return { data: 0, error };
   }
@@ -154,7 +148,7 @@ export const getAssetCountByUser = async (clerk_id: string) => {
   return { data: data.length, error };
 };
 
-export const getAssetsByUser = async (clerk_id: string) => {
+export const getAssetsByUser = async (user_id: string) => {
   const { data, error } = await supabase.from("asset").select();
 
   return { data, error };
@@ -189,11 +183,11 @@ export const getAsset = async (assetName: string) => {
   return { data: null, error };
 };
 
-export const getRecordsByUser = async (clerk_id: string) => {
+export const getRecordsByUser = async (user_id: string) => {
   const { data, error } = await supabase
     .from("record")
     .select()
-    .eq("user", clerk_id);
+    .eq("user_id", user_id);
 
   return { data, error };
 };

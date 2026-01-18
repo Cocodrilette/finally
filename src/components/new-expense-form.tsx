@@ -84,7 +84,7 @@ export function NewExpenseRecordFormComponent() {
     try {
       console.log("values", values);
       await createExpense({
-        clerk_id: userId,
+        user_id: userId,
         currency: values.currency,
         expense: values.expense,
         payment_day: values.payment_day,
