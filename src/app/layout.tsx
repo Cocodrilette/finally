@@ -1,7 +1,6 @@
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { ClerkProvider } from "@clerk/nextjs";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { ToastContainer } from "react-toastify";
@@ -32,19 +31,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider dynamic>
-      <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased layout`}
-        >
-          <ToastContainer theme="dark" />
-          <Header />
-          {children}
-          <Analytics />
-          <SpeedInsights />
-          <Footer />
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased layout`}
+      >
+        <ToastContainer theme="dark" />
+        <Header />
+        {children}
+        <Analytics />
+        <SpeedInsights />
+        <Footer />
+      </body>
+    </html>
   );
 }

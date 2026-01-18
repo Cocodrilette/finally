@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -24,9 +24,9 @@ import {
 } from "@/components/ui/select";
 import { toast } from "react-toastify";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { useAuth } from "@clerk/nextjs";
 import { useSearchParams } from "next/navigation";
 import { createExpense } from "@/db";
+import { createClient } from "@/lib/supabase/client";
 
 const formSchema = z.object({
   expense: z.string().min(2, {
@@ -47,10 +47,24 @@ const formSchema = z.object({
 export function NewExpenseRecordFormComponent() {
   const searchParams = useSearchParams();
   const expense = searchParams.get("expense") || "";
-  const { isLoaded: isUserLoaded, userId } = useAuth();
+  const [userId, setUserId] = useState<string | null>(null);
+  const [isUserLoaded, setIsUserLoaded] = useState(false);
+  const supabase = createClient();
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    const getUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUserId(user?.id ?? null);
+      setIsUserLoaded(true);
+    };
+
+    getUser();
+  }, [supabase]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
