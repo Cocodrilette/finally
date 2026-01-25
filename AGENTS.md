@@ -4,7 +4,8 @@ This document provides guidelines for AI agents working in this repository.
 
 ## Project guidelines
 
-Do not generate or created sumary/resume files or similar.
+- Do not generate or created sumary/resume files or similar.
+- The project uses pnpm as package manager.
 
 ## Project Overview
 

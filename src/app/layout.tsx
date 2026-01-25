@@ -4,9 +4,10 @@ import localFont from "next/font/local";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { ErrorBoundary } from "@/components/error-boundary";
-import { ToastContainer } from "react-toastify";
 import { Analytics } from "@vercel/analytics/next";
 import { ReactQueryProvider } from "@/lib/react-query";
+import { ThemeProvider } from "@/components/theme-provider";
+import { ThemedToastContainer } from "@/components/themed-toast";
 
 import "./globals.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -60,29 +61,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased layout`}
       >
-        <ReactQueryProvider>
-          <ToastContainer 
-            position="bottom-right"
-            autoClose={3000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
-          />
-          <Header />
-          <ErrorBoundary>{children}</ErrorBoundary>
-          <Analytics />
-          <SpeedInsights />
-          <Footer />
-        </ReactQueryProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <ReactQueryProvider>
+            <ThemedToastContainer />
+            <Header />
+            <ErrorBoundary>{children}</ErrorBoundary>
+            <Analytics />
+            <SpeedInsights />
+            <Footer />
+          </ReactQueryProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

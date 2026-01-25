@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { User } from "@supabase/supabase-js";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function Header() {
   const [user, setUser] = useState<User | null>(null);
@@ -42,14 +43,17 @@ export function Header() {
       <h1 className="font-[family-name:var(--font-geist-mono)] font-bold text-xl tracking-tight">
         Fnlly
       </h1>
-      {!loading && user && (
-        <button
-          onClick={handleSignOut}
-          className="px-3 py-1.5 text-sm rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-        >
-          Cerrar sesion
-        </button>
-      )}
+      <div className="flex items-center gap-2">
+        <ThemeToggle />
+        {!loading && user && (
+          <button
+            onClick={handleSignOut}
+            className="px-3 py-1.5 text-sm rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+          >
+            Cerrar sesion
+          </button>
+        )}
+      </div>
     </header>
   );
 }

@@ -20,7 +20,10 @@ export function RecordCard({ record }: { record: Tables<"record"> }) {
     <div className="bg-gray-50 shadow-inner border px-5 py-2">
       <div className="text-xl flex items-center justify-between gap-10">
         <p>
-          <HiddableValue value={formatCurrency(value)} />{" "}
+          <HiddableValue
+            className="text-gray-800"
+            value={formatCurrency(value)}
+          />{" "}
           <span className="text-xs font-light text-gray-500">
             {record.currency}
           </span>{" "}
@@ -29,7 +32,7 @@ export function RecordCard({ record }: { record: Tables<"record"> }) {
           <Link
             href={`/?tab=asset&asset=${record.asset}&shares=${record.shares}`}
           >
-            <IoMdAdd />
+            <IoMdAdd className="text-gray-400 hover:text-gray-600 cursor-pointer" />
           </Link>
           <SlOptions
             onClick={handleInfioClick}
