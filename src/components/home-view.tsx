@@ -1,27 +1,21 @@
 "use client";
 
-import { getLastUserRecords } from "@/db";
-import { useEffect, useState } from "react";
-import { Tables } from "../../database.types";
-import { formatCurrency, getAssetsHistory } from "@/lib/utils";
+import { useEffect, useState, useMemo } from "react";
+import { formatCurrency } from "@/lib/utils";
 import { PageTitle } from "./ui/page-title";
-import { AssetChartData, AssetHistory } from "@/types";
+import { AssetChartData } from "@/types";
 import { HiddableValue } from "./ui/hiddable-value";
 import { ToggleHidenButton } from "./ui/toggle-hiden-button";
 import { AssetChart } from "./asset-chart";
 import { RecordCard } from "./asset-card";
 import { createClient } from "@/lib/supabase/client";
 import { Welcome } from "./welcome";
+import { useUserRecords, useAssetsHistory } from "@/lib/hooks/useRecords";
 
 export function HomeView() {
   const [userId, setUserId] = useState<string | null>(null);
   const [isUserLoaded, setIsUserLoaded] = useState(false);
-  const [total, setTotal] = useState(0);
-  const [records, setRecords] = useState<Array<Tables<"record">>>([]);
-  const [donnutData, setDonnutData] = useState<AssetChartData[]>([]);
-  const [assetHistory, setAssetHistory] = useState<AssetHistory>([]);
-  const [loading, setLoading] = useState(false);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     const getUser = async () => {
@@ -35,49 +29,40 @@ export function HomeView() {
     getUser();
   }, [supabase]);
 
-  async function fetchRecords(userId: string) {
-    setLoading(true);
-    const { data: lastUserRecords, error: lastUserRecordsError } =
-      await getLastUserRecords(userId);
-    const { data: userRecords, error: userRecordsError } =
-      await getAssetsHistory(userId);
-    setLoading(false);
+  // Use React Query hooks for data fetching with automatic caching
+  const { data: records = [], isLoading: recordsLoading } = useUserRecords(userId);
+  const { data: assetHistory = [], isLoading: historyLoading } = useAssetsHistory(userId);
 
-    if (lastUserRecordsError) {
-      console.error("Error fetching records", lastUserRecordsError);
-    }
-    if (userRecordsError) {
-      console.error("Error fetching records", userRecordsError);
-    }
+  const loading = recordsLoading || historyLoading;
 
-    if (lastUserRecords) {
-      setTotal(
-        lastUserRecords.reduce(
-          (acc, record) => acc + record.price * record.shares,
-          0
-        )
-      );
-      setDonnutData(
-        lastUserRecords.map((record) => ({
-          asset: record.asset.split(" ")[0],
-          shares: record.shares,
-          price: record.price,
-          value: record.price * record.shares,
-        }))
-      );
-      setRecords(lastUserRecords);
-    }
+  // Memoize calculations
+  const { total, donnutData, activeRecords } = useMemo(() => {
+    const calculatedTotal = records.reduce(
+      (acc, record) => acc + record.price * record.shares,
+      0
+    );
 
-    if (userRecords) {
-      setAssetHistory(userRecords);
-    }
-  }
+    const calculatedDonnutData: AssetChartData[] = records.map((record) => ({
+      asset: record.asset.split(" ")[0],
+      shares: record.shares,
+      price: record.price,
+      value: record.price * record.shares,
+    }));
 
-  useEffect(() => {
-    if (isUserLoaded && userId) {
-      fetchRecords(userId);
-    }
-  }, [isUserLoaded, userId]);
+    const filteredActiveRecords = records.filter((record) => record.shares > 0);
+
+    return {
+      total: calculatedTotal,
+      donnutData: calculatedDonnutData,
+      activeRecords: filteredActiveRecords,
+    };
+  }, [records]);
+
+  // Memoize formatted total value
+  const formattedTotal = useMemo(
+    () => (loading ? "330.144.889,95" : formatCurrency(total)),
+    [loading, total]
+  );
 
   // Show welcome page if no records and not loading
   const hasRecords = records && records.length > 0;
@@ -92,9 +77,7 @@ export function HomeView() {
       {/* Title */}
       <div className="flex items-center">
         <PageTitle>
-          <HiddableValue
-            value={loading ? "330.144.889,95" : formatCurrency(total)}
-          />
+          <HiddableValue value={formattedTotal} />
         </PageTitle>
         <ToggleHidenButton />
       </div>
@@ -118,11 +101,9 @@ export function HomeView() {
                 }}
               />
             ) : (
-              records
-                .filter((record) => record.shares > 0)
-                .map((record) => (
-                  <RecordCard key={record.id} record={record} />
-                ))
+              activeRecords.map((record) => (
+                <RecordCard key={record.id} record={record} />
+              ))
             )}
           </ul>
         </div>

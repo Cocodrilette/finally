@@ -1,4 +1,3 @@
-import { getRecordsByUser } from "@/db";
 import { AssetHistory } from "@/types";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -34,44 +33,6 @@ export function generateHexColor(input: string): string {
 
   return color;
 }
-
-export const getAssetsHistory = async (
-  user_id: string
-): Promise<{ data: AssetHistory | null; error: any | null }> => {
-  const records = await getRecordsByUser(user_id);
-  if (records.error || !records.data) {
-    return { data: null, error: records.error };
-  }
-
-  // Group records by asset
-  const groupedByAsset = records.data.reduce((acc, record) => {
-    if (!acc[record.asset]) {
-      acc[record.asset] = [];
-    }
-    acc[record.asset].push(record);
-    return acc;
-  }, {} as Record<string, typeof records.data>);
-
-  // Filter assets whose last record price is not 0
-  const validAssets = Object.keys(groupedByAsset).filter((asset) => {
-    const assetRecords = groupedByAsset[asset];
-    const lastRecord = assetRecords[assetRecords.length - 1];
-    return lastRecord.price > 0;
-  });
-
-  // Map only valid assets to history format
-  const history = records.data
-    .filter((record) => validAssets.includes(record.asset))
-    .map((record) => ({
-      asset: record.asset,
-      date: record.created_at,
-      price: record.price,
-      color: generateHexColor(record.asset),
-    }));
-
-  console.log(history);
-  return { data: history, error: null };
-};
 
 export const shortDate = (dateString: string) =>
   new Date(dateString).toLocaleDateString("en-US", {

@@ -15,6 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { DecimalInput } from "@/components/ui/decimal-input";
 import {
   Select,
   SelectContent,
@@ -28,6 +29,7 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { createRecord } from "@/db";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
   asset: z.string().min(2, {
@@ -50,6 +52,7 @@ export function NewFinanceRecordFormComponent() {
   const [userId, setUserId] = useState<string | null>(null);
   const [isUserLoaded, setIsUserLoaded] = useState(false);
   const supabase = createClient();
+  const queryClient = useQueryClient();
   const editingAsset = searchParams.get("asset") || "";
   const editingShares = searchParams.get("shares") || 0;
 
@@ -84,7 +87,7 @@ export function NewFinanceRecordFormComponent() {
 
     setLoading(true);
     try {
-      await createRecord({
+      await createRecord(supabase, {
         asset: values.asset,
         shares: values.shares,
         currency: values.currency,
@@ -92,6 +95,10 @@ export function NewFinanceRecordFormComponent() {
         note: values.note,
         user_id: userId,
       });
+
+      // Invalidate React Query cache to refetch data
+      queryClient.invalidateQueries({ queryKey: ["user-records", userId] });
+      queryClient.invalidateQueries({ queryKey: ["assets-history", userId] });
 
       setError("");
       toast.success("Registro creado con éxito");
@@ -132,19 +139,12 @@ export function NewFinanceRecordFormComponent() {
             <FormItem>
               <FormLabel>Shares</FormLabel>
               <FormControl>
-                <Input
-                  type="number"
-                  step="0.0000000001"
-                  min="0"
+                <DecimalInput
+                  maxDecimals={16}
                   placeholder="0"
                   {...field}
-                  value={field.value === 0 ? "" : field.value}
-                  onFocus={(e) => {
-                    if (e.target.value === "0") {
-                      e.target.value = "";
-                    }
-                  }}
-                  onChange={(e) => field.onChange(+e.target.value)}
+                  value={field.value}
+                  onChange={(value) => field.onChange(value)}
                 />
               </FormControl>
               <FormMessage />
@@ -158,19 +158,12 @@ export function NewFinanceRecordFormComponent() {
             <FormItem>
               <FormLabel>Precio</FormLabel>
               <FormControl>
-                <Input
-                  type="number"
-                  step="0.01"
-                  min="0"
+                <DecimalInput
+                  maxDecimals={16}
                   placeholder="0"
                   {...field}
-                  value={field.value === 0 ? "" : field.value}
-                  onFocus={(e) => {
-                    if (e.target.value === "0") {
-                      e.target.value = "";
-                    }
-                  }}
-                  onChange={(e) => field.onChange(+e.target.value)}
+                  value={field.value}
+                  onChange={(value) => field.onChange(value)}
                 />
               </FormControl>
               <FormMessage />

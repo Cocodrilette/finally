@@ -81,3 +81,65 @@ body {
     "header" auto "main" 1fr "footer" auto / 1fr;
   gap: 8px;
 }
+
+/* Toast customization */
+.Toastify__toast {
+  @apply bg-card text-card-foreground border border-border rounded-lg shadow-lg;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+}
+
+.Toastify__toast--success {
+  @apply border-l-4 border-l-green-600;
+}
+
+.Toastify__toast--success .Toastify__toast-icon {
+  @apply text-green-600;
+}
+
+.Toastify__toast--error {
+  @apply border-l-4 border-l-destructive;
+}
+
+.Toastify__toast--error .Toastify__toast-icon {
+  @apply text-destructive;
+}
+
+.Toastify__toast--warning {
+  @apply border-l-4 border-l-yellow-600;
+}
+
+.Toastify__toast--warning .Toastify__toast-icon {
+  @apply text-yellow-600;
+}
+
+.Toastify__toast--info {
+  @apply border-l-4 border-l-blue-600;
+}
+
+.Toastify__toast--info .Toastify__toast-icon {
+  @apply text-blue-600;
+}
+
+.Toastify__progress-bar {
+  @apply bg-primary;
+}
+
+.Toastify__progress-bar--success {
+  @apply bg-green-600;
+}
+
+.Toastify__progress-bar--error {
+  @apply bg-destructive;
+}
+
+.Toastify__progress-bar--warning {
+  @apply bg-yellow-600;
+}
+
+.Toastify__progress-bar--info {
+  @apply bg-blue-600;
+}
+
+.Toastify__close-button {
+  @apply text-muted-foreground hover:text-foreground;
+}

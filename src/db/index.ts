@@ -1,4 +1,6 @@
-import { supabase } from "@/lib/supabase";
+import { unstable_cache } from "next/cache";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "../../database.types";
 
 type RecordDTO = {
   asset: string;
@@ -6,7 +8,7 @@ type RecordDTO = {
   price: number;
   shares: number;
   user_id: string;
-  note: string | null | undefined;
+  note?: string | null;
 };
 
 type ExpenseDTO = {
@@ -20,8 +22,11 @@ type ExpenseDTO = {
   user_id: string;
 };
 
-export const createExpense = async (expenseDTO: ExpenseDTO) => {
-  const currency = await getOrCreateCurrency(expenseDTO.currency);
+export const createExpense = async (
+  supabase: SupabaseClient<Database>,
+  expenseDTO: ExpenseDTO
+) => {
+  const currency = await getOrCreateCurrency(supabase, expenseDTO.currency);
   if (currency.error || !currency.data) {
     return { data: null, error: currency.error };
   }
@@ -40,13 +45,16 @@ export const createExpense = async (expenseDTO: ExpenseDTO) => {
   return { data, error };
 };
 
-export const createRecord = async (recordDTO: RecordDTO) => {
-  const asset = await getOrCreateAsset(recordDTO.asset);
+export const createRecord = async (
+  supabase: SupabaseClient<Database>,
+  recordDTO: RecordDTO
+) => {
+  const asset = await getOrCreateAsset(supabase, recordDTO.asset);
   if (asset.error || !asset.data) {
     return { data: null, error: asset.error };
   }
 
-  const currency = await getOrCreateCurrency(recordDTO.currency);
+  const currency = await getOrCreateCurrency(supabase, recordDTO.currency);
   if (currency.error || !currency.data) {
     return { data: null, error: currency.error };
   }
@@ -63,13 +71,17 @@ export const createRecord = async (recordDTO: RecordDTO) => {
   return { data, error };
 };
 
-export const updateRecord = async (recordDTO: RecordDTO, record_id: number) => {
-  const asset = await getOrCreateAsset(recordDTO.asset);
+export const updateRecord = async (
+  supabase: SupabaseClient<Database>,
+  recordDTO: RecordDTO,
+  record_id: number
+) => {
+  const asset = await getOrCreateAsset(supabase, recordDTO.asset);
   if (asset.error || !asset.data) {
     return { data: null, error: asset.error };
   }
 
-  const currency = await getOrCreateCurrency(recordDTO.currency);
+  const currency = await getOrCreateCurrency(supabase, recordDTO.currency);
   if (currency.error || !currency.data) {
     return { data: null, error: currency.error };
   }
@@ -89,7 +101,10 @@ export const updateRecord = async (recordDTO: RecordDTO, record_id: number) => {
   return { data, error };
 };
 
-export const getLastUserRecords = async (user_id: string) => {
+export const getLastUserRecords = async (
+  supabase: SupabaseClient<Database>,
+  user_id: string
+) => {
   const { data, error } = await supabase.rpc("get_user_records", {
     p_user_id: user_id,
   });
@@ -97,8 +112,31 @@ export const getLastUserRecords = async (user_id: string) => {
   return { data, error };
 };
 
-export const getOrCreateCurrency = async (currencySymbol: string) => {
-  const { data, error } = await getCurrency(currencySymbol);
+// Server-side cached version for use in Server Components only
+export const getLastUserRecordsCached = async (
+  supabase: SupabaseClient<Database>,
+  user_id: string
+) => {
+  return unstable_cache(
+    async () => {
+      const { data, error } = await supabase.rpc("get_user_records", {
+        p_user_id: user_id,
+      });
+      return { data, error };
+    },
+    [`user-records-${user_id}`],
+    {
+      revalidate: 30,
+      tags: [`user-records-${user_id}`],
+    }
+  )();
+};
+
+export const getOrCreateCurrency = async (
+  supabase: SupabaseClient<Database>,
+  currencySymbol: string
+) => {
+  const { data, error } = await getCurrency(supabase, currencySymbol);
   if (data && !error) {
     return { data, error: null };
   }
@@ -110,7 +148,10 @@ export const getOrCreateCurrency = async (currencySymbol: string) => {
   return { data: newData, error: newError };
 };
 
-export const getCurrency = async (currencySymbol: string) => {
+export const getCurrency = async (
+  supabase: SupabaseClient<Database>,
+  currencySymbol: string
+) => {
   const { data, error } = await supabase
     .from("currency")
     .select()
@@ -120,8 +161,11 @@ export const getCurrency = async (currencySymbol: string) => {
   return { data, error };
 };
 
-export const getUserOrThrow = async (user_id: string) => {
-  const { data, error } = await getUser(user_id);
+export const getUserOrThrow = async (
+  supabase: SupabaseClient<Database>,
+  user_id: string
+) => {
+  const { data, error } = await getUser(supabase, user_id);
   if (error || !data) {
     throw new Error("Unauthorized. Request access to the Fnlly team.");
   }
@@ -129,7 +173,10 @@ export const getUserOrThrow = async (user_id: string) => {
   return data;
 };
 
-export const getUser = async (user_id: string) => {
+export const getUser = async (
+  supabase: SupabaseClient<Database>,
+  user_id: string
+) => {
   const { data, error } = await supabase
     .from("user")
     .select()
@@ -139,8 +186,32 @@ export const getUser = async (user_id: string) => {
   return { data, error };
 };
 
-export const getAssetCountByUser = async (user_id: string) => {
-  const { data, error } = await getAssetsByUser(user_id);
+export const getOrCreateUser = async (
+  supabase: SupabaseClient<Database>,
+  user_id: string
+) => {
+  const { data, error } = await getUser(supabase, user_id);
+  
+  // If user exists, return it
+  if (data && !error) {
+    return { data, error: null };
+  }
+
+  // If user doesn't exist, create it
+  const { data: newData, error: newError } = await supabase
+    .from("user")
+    .insert([{ clerk_id: user_id }])
+    .select()
+    .maybeSingle();
+
+  return { data: newData, error: newError };
+};
+
+export const getAssetCountByUser = async (
+  supabase: SupabaseClient<Database>,
+  user_id: string
+) => {
+  const { data, error } = await getAssetsByUser(supabase, user_id);
   if (error || !data) {
     return { data: 0, error };
   }
@@ -148,14 +219,20 @@ export const getAssetCountByUser = async (user_id: string) => {
   return { data: data.length, error };
 };
 
-export const getAssetsByUser = async (user_id: string) => {
+export const getAssetsByUser = async (
+  supabase: SupabaseClient<Database>,
+  user_id: string
+) => {
   const { data, error } = await supabase.from("asset").select();
 
   return { data, error };
 };
 
-export const getOrCreateAsset = async (assetName: string) => {
-  const asset = await getAsset(assetName);
+export const getOrCreateAsset = async (
+  supabase: SupabaseClient<Database>,
+  assetName: string
+) => {
+  const asset = await getAsset(supabase, assetName);
   if (asset.data && !asset.error) {
     return { data: asset.data, error: null };
   }
@@ -169,7 +246,10 @@ export const getOrCreateAsset = async (assetName: string) => {
   return { data: newData, error: newError };
 };
 
-export const getAsset = async (assetName: string) => {
+export const getAsset = async (
+  supabase: SupabaseClient<Database>,
+  assetName: string
+) => {
   const { data, error } = await supabase
     .from("asset")
     .select()
@@ -183,11 +263,35 @@ export const getAsset = async (assetName: string) => {
   return { data: null, error };
 };
 
-export const getRecordsByUser = async (user_id: string) => {
+export const getRecordsByUser = async (
+  supabase: SupabaseClient<Database>,
+  user_id: string
+) => {
   const { data, error } = await supabase
     .from("record")
     .select()
     .eq("user_id", user_id);
 
   return { data, error };
+};
+
+// Server-side cached version for use in Server Components only
+export const getRecordsByUserCached = async (
+  supabase: SupabaseClient<Database>,
+  user_id: string
+) => {
+  return unstable_cache(
+    async () => {
+      const { data, error } = await supabase
+        .from("record")
+        .select()
+        .eq("user_id", user_id);
+      return { data, error };
+    },
+    [`records-by-user-${user_id}`],
+    {
+      revalidate: 30,
+      tags: [`records-by-user-${user_id}`],
+    }
+  )();
 };

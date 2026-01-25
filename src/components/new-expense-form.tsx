@@ -15,6 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { DecimalInput } from "@/components/ui/decimal-input";
 import {
   Select,
   SelectContent,
@@ -27,6 +28,7 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { useSearchParams } from "next/navigation";
 import { createExpense } from "@/db";
 import { createClient } from "@/lib/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
   expense: z.string().min(2, {
@@ -50,6 +52,7 @@ export function NewExpenseRecordFormComponent() {
   const [userId, setUserId] = useState<string | null>(null);
   const [isUserLoaded, setIsUserLoaded] = useState(false);
   const supabase = createClient();
+  const queryClient = useQueryClient();
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -83,7 +86,7 @@ export function NewExpenseRecordFormComponent() {
     setLoading(true);
     try {
       console.log("values", values);
-      await createExpense({
+      await createExpense(supabase, {
         user_id: userId,
         currency: values.currency,
         expense: values.expense,
@@ -129,19 +132,12 @@ export function NewExpenseRecordFormComponent() {
             <FormItem>
               <FormLabel>Valor</FormLabel>
               <FormControl>
-                <Input
-                  type="number"
-                  step="0.01"
-                  min="0"
+                <DecimalInput
+                  maxDecimals={16}
                   placeholder="0"
                   {...field}
-                  value={field.value === 0 ? "" : field.value}
-                  onFocus={(e) => {
-                    if (e.target.value === "0") {
-                      e.target.value = "";
-                    }
-                  }}
-                  onChange={(e) => field.onChange(+e.target.value)}
+                  value={field.value}
+                  onChange={(value) => field.onChange(value)}
                 />
               </FormControl>
               <FormMessage />
